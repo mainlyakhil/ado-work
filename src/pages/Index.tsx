@@ -132,15 +132,25 @@ const Index = () => {
   const currentAvatar = animalAvatars.find(a => a.id === selectedAvatar) || animalAvatars[0];
   const userName = localStorage.getItem("ado-user-name") || currentAvatar.name;
 
-  return (
-    <MobileLayout>
-      <div className="animate-fade-in space-y-5 px-4 pt-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <button onClick={() => navigate("/growth")} className="flex items-center gap-2 rounded-full border border-border px-3 py-2 transition-transform active:scale-95">
-            <TrendingUp className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-bold">Lvl 4</span>
-          </button>
+  // Compute real data from onboarding + tracking
+  const userWeight = parseInt(localStorage.getItem("ado-user-weight") || "70");
+  const userGoal = localStorage.getItem("ado-user-goal") || "";
+  const goalAdjust: Record<string, number> = { lose: -500, gain: 300, maintain: 0, endurance: 200, flexibility: -200, strength: 400 };
+  const dailyCalorieTarget = userWeight * 30 + (goalAdjust[userGoal] || 0);
+  const dailyBurnTarget = Math.round(dailyCalorieTarget * 0.25);
+
+  const dietLog: { date: string; calories: number }[] = JSON.parse(localStorage.getItem("ado-diet-log") || "[]");
+  const today = new Date().toISOString().split("T")[0];
+  const todayCalories = dietLog.filter(l => l.date === today).reduce((s, l) => s + l.calories, 0);
+
+  const workoutLog: { date: string; calories: number }[] = JSON.parse(localStorage.getItem("ado-workout-log") || "[]");
+  const todayBurnt = workoutLog.filter(l => l.date === today).reduce((s, l) => s + l.calories, 0);
+
+  const goalProgress = dailyCalorieTarget > 0 ? Math.min(100, Math.round((todayCalories / dailyCalorieTarget) * 100)) : 0;
+
+  const activeDaysList: string[] = JSON.parse(localStorage.getItem("ado-active-days") || "[]");
+  const userLevel = Math.max(1, Math.floor(activeDaysList.length / 7));
+  const totalSessions = activeDaysList.length;
           <h1 className="text-lg font-bold">Ado Work</h1>
           <div className="flex items-center gap-2">
             <button onClick={() => navigate("/install")} className="rounded-full border border-border p-2 transition-transform active:scale-95">
