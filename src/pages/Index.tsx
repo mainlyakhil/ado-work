@@ -268,37 +268,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Track Your Goal */}
-        <div>
-          <h2 className="mb-3 text-lg font-bold">Track your goal</h2>
-          <div className="gym-gradient-card rounded-2xl p-4">
-            <div className="flex items-center gap-4">
-              <ProgressRing progress={12} size={70} strokeWidth={5} />
-              <div className="flex-1 space-y-3">
-                <button onClick={() => navigate("/diet-insight")} className="flex w-full items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20"><UtensilsCrossed className="h-3.5 w-3.5 text-primary" /></div>
-                    <div className="text-left">
-                      <p className="text-sm font-bold"><span className="text-foreground">0</span><span className="text-muted-foreground text-xs">/2,784.65 Kcal</span></p>
-                      <p className="text-[10px] text-muted-foreground">Calories Consumed</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </button>
-                <button onClick={() => navigate("/diet-insight")} className="flex w-full items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gym-green/20"><Flame className="h-3.5 w-3.5 text-gym-green" /></div>
-                    <div className="text-left">
-                      <p className="text-sm font-bold"><span className="text-foreground">0</span><span className="text-muted-foreground text-xs">/712.53 Kcal</span></p>
-                      <p className="text-[10px] text-muted-foreground">Calories Burnt</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* My Fitness Goal */}
         <div className="gym-gradient-card overflow-hidden rounded-2xl">
