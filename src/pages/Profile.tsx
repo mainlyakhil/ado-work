@@ -171,7 +171,7 @@ const Profile = () => {
             </div>
           </button>
           <h2 className="mt-3 text-lg font-bold">{userName}</h2>
-          <p className="text-xs text-muted-foreground">Fitness Enthusiast · Level {Math.max(1, Math.floor(totalActiveDays / 7))}</p>
+          <p className="text-xs text-muted-foreground">{(() => { const g = localStorage.getItem("ado-user-goal"); const map: Record<string, string> = { lose: "Fat Burner", gain: "Muscle Builder", maintain: "Fitness Keeper", endurance: "Endurance Runner", flexibility: "Flexibility Pro", strength: "Strength Athlete" }; return map[g || ""] || "Fitness Enthusiast"; })()} · Level {Math.max(1, Math.floor(totalActiveDays / 7))}</p>
         </div>
 
         {/* Streak Banner */}
