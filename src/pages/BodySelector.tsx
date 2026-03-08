@@ -513,7 +513,7 @@ const BodySelector = () => {
       {!selectedPart && !hoveredPart && (
         <text x="100" y="340" textAnchor="middle" fill="hsl(var(--muted-foreground))"
           fontSize="7" fontWeight="600" fontFamily="Inter, sans-serif"
-          style={{ opacity: isTransitioning ? 0 : 0.6, transition: "opacity 0.3s ease" }}>
+          style={{ opacity: 0.6, transition: "opacity 0.5s ease" }}>
           {pose.name} Pose
         </text>
       )}
