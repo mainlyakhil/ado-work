@@ -548,6 +548,144 @@ const mealPlans: Record<DietType, Record<Goal, Meal[]>> = {
       ]},
     ],
   },
+  carnivore: {
+    lose: [
+      { id: "cn1", name: "Breakfast", time: "8:00 AM", icon: Sun, totalCalories: 400, items: [
+        { name: "Beef Patties", calories: 300, protein: 28, carbs: 0, fat: 20, emoji: "🥩", quantity: "2 patties" },
+        { name: "Eggs Sunny Side", calories: 100, protein: 8, carbs: 0, fat: 7, emoji: "🍳", quantity: "2 eggs" },
+      ]},
+      { id: "cn2", name: "Lunch", time: "1:00 PM", icon: Sun, totalCalories: 450, items: [
+        { name: "Grilled Chicken Thighs", calories: 300, protein: 35, carbs: 0, fat: 18, emoji: "🍗", quantity: "250g" },
+        { name: "Bone Broth", calories: 50, protein: 10, carbs: 0, fat: 1, emoji: "🍲", quantity: "1 cup" },
+        { name: "Butter", calories: 100, protein: 0, carbs: 0, fat: 11, emoji: "🧈", quantity: "1 tbsp" },
+      ]},
+      { id: "cn3", name: "Dinner", time: "6:30 PM", icon: Moon, totalCalories: 500, items: [
+        { name: "Ribeye Steak", calories: 400, protein: 40, carbs: 0, fat: 26, emoji: "🥩", quantity: "200g" },
+        { name: "Egg Yolks", calories: 60, protein: 3, carbs: 0, fat: 5, emoji: "🍳", quantity: "2 yolks" },
+        { name: "Tallow", calories: 40, protein: 0, carbs: 0, fat: 5, emoji: "🫙", quantity: "1 tsp" },
+      ]},
+    ],
+    maintain: [
+      { id: "cnm1", name: "Breakfast", time: "8:00 AM", icon: Sun, totalCalories: 550, items: [
+        { name: "Bacon & Eggs", calories: 400, protein: 25, carbs: 0, fat: 32, emoji: "🥓", quantity: "4 strips + 3 eggs" },
+        { name: "Liver Pâté", calories: 150, protein: 10, carbs: 2, fat: 12, emoji: "🫙", quantity: "50g" },
+      ]},
+      { id: "cnm2", name: "Lunch", time: "1:00 PM", icon: Sun, totalCalories: 600, items: [
+        { name: "Lamb Shoulder", calories: 450, protein: 38, carbs: 0, fat: 32, emoji: "🍖", quantity: "250g" },
+        { name: "Bone Marrow", calories: 100, protein: 1, carbs: 0, fat: 11, emoji: "🦴", quantity: "1 bone" },
+        { name: "Sardines", calories: 50, protein: 6, carbs: 0, fat: 3, emoji: "🐟", quantity: "2 pcs" },
+      ]},
+      { id: "cnm3", name: "Dinner", time: "7:00 PM", icon: Moon, totalCalories: 650, items: [
+        { name: "NY Strip Steak", calories: 450, protein: 45, carbs: 0, fat: 28, emoji: "🥩", quantity: "280g" },
+        { name: "Shrimp", calories: 100, protein: 20, carbs: 0, fat: 2, emoji: "🦐", quantity: "100g" },
+        { name: "Ghee", calories: 100, protein: 0, carbs: 0, fat: 11, emoji: "🧈", quantity: "1 tbsp" },
+      ]},
+    ],
+    gain: [
+      { id: "cng1", name: "Breakfast", time: "7:00 AM", icon: Sun, totalCalories: 750, items: [
+        { name: "5-Egg Scramble", calories: 400, protein: 35, carbs: 0, fat: 28, emoji: "🍳", quantity: "5 eggs" },
+        { name: "Pork Sausage", calories: 250, protein: 15, carbs: 0, fat: 20, emoji: "🌭", quantity: "3 links" },
+        { name: "Beef Tallow", calories: 100, protein: 0, carbs: 0, fat: 11, emoji: "🫙", quantity: "1 tbsp" },
+      ]},
+      { id: "cng2", name: "Lunch", time: "12:30 PM", icon: Sun, totalCalories: 800, items: [
+        { name: "T-Bone Steak", calories: 550, protein: 50, carbs: 0, fat: 38, emoji: "🥩", quantity: "350g" },
+        { name: "Bone Broth", calories: 100, protein: 15, carbs: 0, fat: 4, emoji: "🍲", quantity: "2 cups" },
+        { name: "Butter", calories: 150, protein: 0, carbs: 0, fat: 17, emoji: "🧈", quantity: "1.5 tbsp" },
+      ]},
+      { id: "cng3", name: "Dinner", time: "7:00 PM", icon: Moon, totalCalories: 850, items: [
+        { name: "Whole Roasted Duck", calories: 600, protein: 45, carbs: 0, fat: 45, emoji: "🦆", quantity: "350g" },
+        { name: "Salmon Roe", calories: 100, protein: 8, carbs: 0, fat: 7, emoji: "🐟", quantity: "50g" },
+        { name: "Organ Mix", calories: 150, protein: 18, carbs: 2, fat: 8, emoji: "🫙", quantity: "100g" },
+      ]},
+    ],
+    bulk: [
+      { id: "cnb1", name: "Breakfast", time: "7:00 AM", icon: Sun, totalCalories: 950, items: [
+        { name: "6-Egg Omelette w/ Cheese", calories: 550, protein: 40, carbs: 2, fat: 42, emoji: "🍳", quantity: "6 eggs + cheddar" },
+        { name: "Pork Belly", calories: 400, protein: 15, carbs: 0, fat: 40, emoji: "🥓", quantity: "150g" },
+      ]},
+      { id: "cnb2", name: "Lunch", time: "12:00 PM", icon: Sun, totalCalories: 1000, items: [
+        { name: "Double Ribeye", calories: 700, protein: 60, carbs: 0, fat: 50, emoji: "🥩", quantity: "400g" },
+        { name: "Bone Marrow", calories: 200, protein: 2, carbs: 0, fat: 22, emoji: "🦴", quantity: "2 bones" },
+        { name: "Butter", calories: 100, protein: 0, carbs: 0, fat: 11, emoji: "🧈", quantity: "1 tbsp" },
+      ]},
+      { id: "cnb3", name: "Dinner", time: "7:00 PM", icon: Moon, totalCalories: 900, items: [
+        { name: "Lamb Rack", calories: 550, protein: 40, carbs: 0, fat: 42, emoji: "🍖", quantity: "300g" },
+        { name: "Grilled Liver", calories: 200, protein: 25, carbs: 3, fat: 8, emoji: "🫙", quantity: "150g" },
+        { name: "Duck Fat", calories: 150, protein: 0, carbs: 0, fat: 17, emoji: "🦆", quantity: "1.5 tbsp" },
+      ]},
+    ],
+  },
+  intermittent: {
+    lose: [
+      { id: "if1", name: "First Meal (12 PM)", time: "12:00 PM", icon: Sun, totalCalories: 600, items: [
+        { name: "Grilled Chicken Salad", calories: 350, protein: 40, carbs: 12, fat: 16, emoji: "🥗", quantity: "1 large bowl" },
+        { name: "Avocado", calories: 150, protein: 2, carbs: 8, fat: 14, emoji: "🥑", quantity: "1 whole" },
+        { name: "Boiled Eggs", calories: 100, protein: 12, carbs: 0, fat: 7, emoji: "🍳", quantity: "2 eggs" },
+      ]},
+      { id: "if2", name: "Snack (3 PM)", time: "3:00 PM", icon: Coffee, totalCalories: 200, items: [
+        { name: "Greek Yogurt", calories: 120, protein: 18, carbs: 6, fat: 4, emoji: "🥛", quantity: "200g" },
+        { name: "Almonds", calories: 80, protein: 3, carbs: 3, fat: 7, emoji: "🥜", quantity: "12 pcs" },
+      ]},
+      { id: "if3", name: "Last Meal (7 PM)", time: "7:00 PM", icon: Moon, totalCalories: 500, items: [
+        { name: "Salmon Fillet", calories: 280, protein: 32, carbs: 0, fat: 16, emoji: "🐟", quantity: "200g" },
+        { name: "Quinoa", calories: 120, protein: 4, carbs: 21, fat: 2, emoji: "🌾", quantity: "80g" },
+        { name: "Steamed Veggies", calories: 60, protein: 3, carbs: 10, fat: 0, emoji: "🥦", quantity: "1.5 cups" },
+        { name: "Lemon Dressing", calories: 40, protein: 0, carbs: 1, fat: 4, emoji: "🍋", quantity: "1 tbsp" },
+      ]},
+    ],
+    maintain: [
+      { id: "ifm1", name: "First Meal (12 PM)", time: "12:00 PM", icon: Sun, totalCalories: 750, items: [
+        { name: "Steak & Eggs", calories: 450, protein: 42, carbs: 2, fat: 30, emoji: "🥩", quantity: "200g steak + 2 eggs" },
+        { name: "Sweet Potato", calories: 150, protein: 2, carbs: 35, fat: 0, emoji: "🍠", quantity: "1 medium" },
+        { name: "Mixed Greens", calories: 50, protein: 3, carbs: 6, fat: 2, emoji: "🥗", quantity: "2 cups" },
+        { name: "Olive Oil", calories: 100, protein: 0, carbs: 0, fat: 11, emoji: "🫒", quantity: "1 tbsp" },
+      ]},
+      { id: "ifm2", name: "Snack (4 PM)", time: "4:00 PM", icon: Coffee, totalCalories: 300, items: [
+        { name: "Protein Shake", calories: 150, protein: 30, carbs: 5, fat: 2, emoji: "🥤", quantity: "1 scoop" },
+        { name: "Banana + PB", calories: 150, protein: 4, carbs: 25, fat: 6, emoji: "🍌", quantity: "1 banana" },
+      ]},
+      { id: "ifm3", name: "Last Meal (8 PM)", time: "8:00 PM", icon: Moon, totalCalories: 700, items: [
+        { name: "Chicken Stir-Fry", calories: 400, protein: 38, carbs: 20, fat: 18, emoji: "🍗", quantity: "300g" },
+        { name: "Brown Rice", calories: 200, protein: 4, carbs: 42, fat: 2, emoji: "🍚", quantity: "150g" },
+        { name: "Sesame Oil", calories: 50, protein: 0, carbs: 0, fat: 6, emoji: "🫙", quantity: "½ tbsp" },
+        { name: "Edamame", calories: 50, protein: 5, carbs: 4, fat: 2, emoji: "🫛", quantity: "50g" },
+      ]},
+    ],
+    gain: [
+      { id: "ifg1", name: "First Meal (12 PM)", time: "12:00 PM", icon: Sun, totalCalories: 900, items: [
+        { name: "Double Chicken Breast", calories: 400, protein: 72, carbs: 0, fat: 10, emoji: "🍗", quantity: "350g" },
+        { name: "White Rice", calories: 300, protein: 6, carbs: 66, fat: 1, emoji: "🍚", quantity: "250g" },
+        { name: "Avocado", calories: 150, protein: 2, carbs: 8, fat: 14, emoji: "🥑", quantity: "1 whole" },
+        { name: "Olive Oil", calories: 50, protein: 0, carbs: 0, fat: 6, emoji: "🫒", quantity: "½ tbsp" },
+      ]},
+      { id: "ifg2", name: "Snack (4 PM)", time: "4:00 PM", icon: Coffee, totalCalories: 450, items: [
+        { name: "Mass Gainer Shake", calories: 350, protein: 35, carbs: 45, fat: 5, emoji: "🥤", quantity: "1 serving" },
+        { name: "Trail Mix", calories: 100, protein: 3, carbs: 10, fat: 7, emoji: "🥜", quantity: "30g" },
+      ]},
+      { id: "ifg3", name: "Last Meal (8 PM)", time: "8:00 PM", icon: Moon, totalCalories: 850, items: [
+        { name: "Beef Stir-Fry", calories: 450, protein: 42, carbs: 15, fat: 26, emoji: "🥩", quantity: "300g" },
+        { name: "Noodles", calories: 250, protein: 7, carbs: 50, fat: 2, emoji: "🍜", quantity: "200g" },
+        { name: "Peanut Sauce", calories: 100, protein: 4, carbs: 5, fat: 8, emoji: "🥜", quantity: "2 tbsp" },
+        { name: "Stir-Fry Veggies", calories: 50, protein: 2, carbs: 8, fat: 1, emoji: "🥦", quantity: "1 cup" },
+      ]},
+    ],
+    bulk: [
+      { id: "ifb1", name: "First Meal (12 PM)", time: "12:00 PM", icon: Sun, totalCalories: 1100, items: [
+        { name: "Mega Burrito Bowl", calories: 700, protein: 50, carbs: 65, fat: 25, emoji: "🌯", quantity: "1 massive bowl" },
+        { name: "Protein Shake", calories: 250, protein: 50, carbs: 8, fat: 3, emoji: "🥤", quantity: "2 scoops" },
+        { name: "Banana", calories: 100, protein: 1, carbs: 25, fat: 0, emoji: "🍌", quantity: "1 large" },
+      ]},
+      { id: "ifb2", name: "Snack (4 PM)", time: "4:00 PM", icon: Coffee, totalCalories: 600, items: [
+        { name: "PB&J Sandwich", calories: 400, protein: 14, carbs: 48, fat: 18, emoji: "🥪", quantity: "1 large" },
+        { name: "Whole Milk", calories: 200, protein: 10, carbs: 15, fat: 10, emoji: "🥛", quantity: "400ml" },
+      ]},
+      { id: "ifb3", name: "Last Meal (8 PM)", time: "8:00 PM", icon: Moon, totalCalories: 1000, items: [
+        { name: "Double Steak", calories: 600, protein: 60, carbs: 0, fat: 38, emoji: "🥩", quantity: "400g" },
+        { name: "Loaded Baked Potato", calories: 300, protein: 6, carbs: 45, fat: 12, emoji: "🥔", quantity: "1 large" },
+        { name: "Caesar Salad", calories: 100, protein: 4, carbs: 6, fat: 7, emoji: "🥗", quantity: "1 side" },
+      ]},
+    ],
+  },
 };
 
 interface ImportedMealItem {
