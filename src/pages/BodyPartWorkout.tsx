@@ -1,5 +1,5 @@
-import { ChevronLeft, Play, Clock, Flame, Dumbbell, CheckCircle2 } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, Play, Clock, Flame, Dumbbell, CheckCircle2, Timer, Minus, Plus, Volume2, Square } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
 import ProgressRing from "@/components/ProgressRing";
