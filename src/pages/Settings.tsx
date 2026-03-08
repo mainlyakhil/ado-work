@@ -237,6 +237,100 @@ const Settings = () => {
           <div className="w-6" />
         </div>
 
+        {/* Edit Profile */}
+        <button onClick={() => toggleSection("profile")} className="mt-4 flex w-full items-center gap-3 rounded-2xl gym-gradient-card p-4 transition-transform active:scale-[0.98]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><User className="h-5 w-5 text-primary" /></div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-bold">Edit Profile</p>
+            <p className="text-[10px] text-muted-foreground">{profileName || "Update your info"}</p>
+          </div>
+        </button>
+
+        {section === "profile" && (
+          <div className="mt-3 space-y-3 animate-fade-in gym-gradient-card rounded-2xl p-4">
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Name</label>
+              <input type="text" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder="Your name"
+                className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary" />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Gender</label>
+                <select value={profileGender} onChange={e => setProfileGender(e.target.value)}
+                  className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground outline-none">
+                  <option value="">Select</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Age</label>
+                <input type="number" value={profileAge} onChange={e => setProfileAge(e.target.value)} placeholder="25"
+                  className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground placeholder:text-muted-foreground outline-none" />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Height (cm)</label>
+                <input type="number" value={profileHeight} onChange={e => setProfileHeight(e.target.value)} placeholder="170"
+                  className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground placeholder:text-muted-foreground outline-none" />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Weight (kg)</label>
+                <input type="number" value={profileWeight} onChange={e => setProfileWeight(e.target.value)} placeholder="70"
+                  className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground placeholder:text-muted-foreground outline-none" />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Target (kg)</label>
+                <input type="number" value={profileTargetWeight} onChange={e => setProfileTargetWeight(e.target.value)} placeholder="65"
+                  className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground placeholder:text-muted-foreground outline-none" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Fitness Goal</label>
+              <select value={profileGoal} onChange={e => setProfileGoal(e.target.value)}
+                className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground outline-none">
+                <option value="">Select</option>
+                <option value="lose">🔥 Lose Weight</option>
+                <option value="gain">💪 Build Muscle</option>
+                <option value="maintain">⚖️ Stay Fit</option>
+                <option value="endurance">🏃 Endurance</option>
+                <option value="flexibility">🧘 Flexibility</option>
+                <option value="strength">🏋️ Raw Strength</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Session (min)</label>
+                <select value={profileDuration} onChange={e => setProfileDuration(e.target.value)}
+                  className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground outline-none">
+                  <option value="">Select</option>
+                  <option value="15">15 min</option>
+                  <option value="30">30 min</option>
+                  <option value="45">45 min</option>
+                  <option value="60">60 min</option>
+                  <option value="90">90+ min</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Experience</label>
+                <select value={profileExperience} onChange={e => setProfileExperience(e.target.value)}
+                  className="mt-1 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold text-foreground outline-none">
+                  <option value="">Select</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="athlete">Athlete</option>
+                </select>
+              </div>
+            </div>
+            <button onClick={handleSaveProfile} className="flex w-full items-center justify-center gap-2 rounded-xl gym-gradient-orange py-3 text-sm font-bold text-primary-foreground active:scale-95 transition-transform">
+              <Save className="h-4 w-4" /> Save Changes
+            </button>
+          </div>
+        )}
+
         {/* Theme Section */}
         <button onClick={() => toggleSection("themes")} className="mt-4 flex w-full items-center gap-3 rounded-2xl gym-gradient-card p-4 transition-transform active:scale-[0.98]">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/20"><Palette className="h-5 w-5 text-primary" /></div>
