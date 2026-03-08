@@ -1,5 +1,5 @@
 import { ChevronLeft, Dumbbell, ChevronRight, Zap } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
 
@@ -47,6 +47,188 @@ const noEquipWorkouts: NoEquipWorkout[] = [
   { id: "13", name: "Nordic Hamstring Flow", bodyPart: "hamstrings", duration: "15 min", reps: "4 rounds", color: "from-emerald-500/20 to-green-500/20", emoji: "🦵", description: "Bodyweight hamstring strength", steps: ["Nordic Curls (Assisted) 3×5", "Single Leg RDL 3×10 each", "Glute-Ham Walk Out 3×8", "Good Morning Stretch 3×15"] },
   { id: "14", name: "Lower Back Relief", bodyPart: "lower-back", duration: "12 min", reps: "3 rounds", color: "from-amber-500/20 to-orange-500/20", emoji: "🔙", description: "Strengthen and mobilize", steps: ["Cat-Cow 2×15", "Bird Dog 3×10 each", "Superman Hold 3×30s", "Pelvic Tilts 3×15"] },
   { id: "15", name: "Hip Flexor Unlock", bodyPart: "hip-flexors", duration: "10 min", reps: "3 rounds", color: "from-violet-500/20 to-purple-500/20", emoji: "🧘", description: "Open tight hip flexors", steps: ["Kneeling Lunge Stretch 2×30s each", "Leg Swings 3×15 each", "Couch Stretch 2×45s each", "Psoas March 3×12 each"] },
+  { id: "16", name: "Lat Pulldown Mimics", bodyPart: "lats", duration: "12 min", reps: "4 rounds", color: "from-sky-500/20 to-indigo-500/20", emoji: "🦅", description: "Bodyweight lat activation", steps: ["Lying Pulldowns 3×12", "Towel Rows 3×10", "Prone Y-T-W 3×8 each", "Superman Lat Pulls 3×15"] },
+  { id: "17", name: "Oblique Burner", bodyPart: "obliques", duration: "10 min", reps: "3 rounds", color: "from-rose-500/20 to-pink-500/20", emoji: "🔄", description: "Target your side abs", steps: ["Side Plank Dips 3×12 each", "Russian Twists 3×20", "Bicycle Crunches 3×20", "Windshield Wipers 3×10"] },
+  { id: "18", name: "Trap Builder", bodyPart: "traps", duration: "10 min", reps: "4 rounds", color: "from-zinc-500/20 to-stone-500/20", emoji: "🔺", description: "Bodyweight trap activation", steps: ["Prone Shrugs 3×15", "Wall Handstand Shrugs 3×8", "Scapular Push-ups 3×12", "Band Pull-aparts 3×15"] },
+  { id: "19", name: "Rear Delt Sculptor", bodyPart: "rear-delts", duration: "10 min", reps: "3 rounds", color: "from-fuchsia-500/20 to-purple-500/20", emoji: "🎯", description: "Isolate rear delts without weights", steps: ["Prone Y Raises 3×15", "Reverse Snow Angels 3×12", "Band Face Pulls 3×15", "Prone T Raises 3×12"] },
+  { id: "20", name: "Forearm Fortress", bodyPart: "forearms", duration: "10 min", reps: "3 rounds", color: "from-amber-500/20 to-yellow-500/20", emoji: "🦾", description: "Grip and forearm endurance", steps: ["Dead Hangs 3×30s", "Finger Push-ups 3×8", "Towel Wringing 3×20s", "Wrist Rotations 3×15"] },
+];
+
+// ============= POSE SYSTEM =============
+// Each pose is a set of SVG paths for the body in different positions
+interface Pose {
+  name: string;
+  // All coordinates relative to viewBox 0 0 200 370
+  head: { cx: number; cy: number };
+  neck: { x: number; y: number; w: number; h: number };
+  torso: string; // main torso outline
+  leftArm: string; // left arm path
+  rightArm: string; // right arm path
+  leftForearm: string;
+  rightForearm: string;
+  leftHand: { cx: number; cy: number };
+  rightHand: { cx: number; cy: number };
+  leftLeg: string;
+  rightLeg: string;
+  leftCalf: string;
+  rightCalf: string;
+  leftFoot: { cx: number; cy: number };
+  rightFoot: { cx: number; cy: number };
+}
+
+const poses: Pose[] = [
+  {
+    // Standing relaxed - anatomical position
+    name: "Relaxed",
+    head: { cx: 100, cy: 28 },
+    neck: { x: 91, y: 46, w: 18, h: 14 },
+    torso: "M80 66 L120 66 L124 170 L76 170 Z",
+    leftArm: "M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z",
+    rightArm: "M150 90 Q156 106 156 120 Q154 134 148 138 L138 138 Q134 128 136 114 Q138 102 142 90 Z",
+    leftForearm: "M44 142 Q40 160 38 178 L50 178 Q52 164 52 146 Z",
+    rightForearm: "M148 142 Q152 160 154 178 L142 178 Q140 164 140 146 Z",
+    leftHand: { cx: 44, cy: 186 },
+    rightHand: { cx: 148, cy: 186 },
+    leftLeg: "M76 172 Q74 210 74 248 L92 248 Q94 220 92 200 Q88 180 86 172 Z",
+    rightLeg: "M108 172 Q106 210 106 248 L124 248 Q126 220 124 200 Q120 180 114 172 Z",
+    leftCalf: "M76 252 Q74 274 76 300 L92 300 Q94 280 92 256 Z",
+    rightCalf: "M108 252 Q106 274 108 300 L124 300 Q126 280 124 256 Z",
+    leftFoot: { cx: 84, cy: 308 },
+    rightFoot: { cx: 116, cy: 308 },
+  },
+  {
+    // Front double bicep
+    name: "Double Bicep",
+    head: { cx: 100, cy: 26 },
+    neck: { x: 91, y: 44, w: 18, h: 14 },
+    torso: "M78 64 L122 64 L126 170 L74 170 Z",
+    leftArm: "M40 80 Q28 74 22 60 Q18 50 20 44 L30 42 Q34 52 36 60 Q40 70 48 78 Z",
+    rightArm: "M152 80 Q164 74 170 60 Q174 50 172 44 L162 42 Q158 52 156 60 Q152 70 144 78 Z",
+    leftForearm: "M20 44 Q16 32 20 20 L32 18 Q30 30 30 42 Z",
+    rightForearm: "M172 44 Q176 32 172 20 L160 18 Q162 30 162 42 Z",
+    leftHand: { cx: 26, cy: 14 },
+    rightHand: { cx: 166, cy: 14 },
+    leftLeg: "M74 172 Q72 210 72 248 L90 248 Q92 220 90 200 Q86 180 84 172 Z",
+    rightLeg: "M110 172 Q108 210 108 248 L126 248 Q128 220 126 200 Q122 180 116 172 Z",
+    leftCalf: "M74 252 Q72 274 74 300 L90 300 Q92 280 90 256 Z",
+    rightCalf: "M110 252 Q108 274 110 300 L126 300 Q128 280 126 256 Z",
+    leftFoot: { cx: 82, cy: 308 },
+    rightFoot: { cx: 118, cy: 308 },
+  },
+  {
+    // Side chest pose
+    name: "Side Chest",
+    head: { cx: 98, cy: 28 },
+    neck: { x: 89, y: 46, w: 18, h: 14 },
+    torso: "M76 66 L120 66 L124 170 L72 170 Z",
+    leftArm: "M38 84 Q30 78 26 68 Q24 58 28 52 L38 54 Q36 62 38 70 Q42 78 48 82 Z",
+    rightArm: "M148 84 Q140 78 134 90 Q130 102 132 112 L142 114 Q140 104 142 94 Q146 86 152 82 Z",
+    leftForearm: "M28 52 Q22 44 26 34 L36 32 Q34 42 38 54 Z",
+    rightForearm: "M132 112 Q126 120 122 132 L134 134 Q136 124 142 114 Z",
+    leftHand: { cx: 30, cy: 28 },
+    rightHand: { cx: 128, cy: 140 },
+    leftLeg: "M72 172 Q70 210 70 248 L88 248 Q90 220 88 200 Q84 180 82 172 Z",
+    rightLeg: "M108 172 Q106 210 106 248 L124 248 Q126 220 124 200 Q120 180 114 172 Z",
+    leftCalf: "M72 252 Q70 274 72 300 L88 300 Q90 280 88 256 Z",
+    rightCalf: "M108 252 Q106 274 108 300 L124 300 Q128 280 126 256 Z",
+    leftFoot: { cx: 80, cy: 308 },
+    rightFoot: { cx: 116, cy: 308 },
+  },
+  {
+    // Most muscular / crab pose
+    name: "Most Muscular",
+    head: { cx: 100, cy: 30 },
+    neck: { x: 91, y: 48, w: 18, h: 12 },
+    torso: "M76 66 L124 66 L128 172 L72 172 Z",
+    leftArm: "M40 82 Q30 90 26 100 Q24 108 28 116 L38 114 Q36 106 38 98 Q42 90 50 84 Z",
+    rightArm: "M152 82 Q162 90 166 100 Q168 108 164 116 L154 114 Q156 106 154 98 Q150 90 142 84 Z",
+    leftForearm: "M28 116 Q32 126 40 134 L50 130 Q42 124 38 114 Z",
+    rightForearm: "M164 116 Q160 126 152 134 L142 130 Q150 124 154 114 Z",
+    leftHand: { cx: 46, cy: 140 },
+    rightHand: { cx: 146, cy: 140 },
+    leftLeg: "M72 174 Q68 212 68 250 L88 250 Q90 222 88 202 Q84 182 82 174 Z",
+    rightLeg: "M112 174 Q110 212 110 250 L130 250 Q132 222 130 202 Q126 182 118 174 Z",
+    leftCalf: "M70 254 Q68 276 70 302 L88 302 Q90 282 88 258 Z",
+    rightCalf: "M112 254 Q110 276 112 302 L130 302 Q132 282 130 258 Z",
+    leftFoot: { cx: 80, cy: 310 },
+    rightFoot: { cx: 122, cy: 310 },
+  },
+  {
+    // Lat spread
+    name: "Lat Spread",
+    head: { cx: 100, cy: 28 },
+    neck: { x: 91, y: 46, w: 18, h: 14 },
+    torso: "M72 66 L128 66 L132 170 L68 170 Z",
+    leftArm: "M34 82 Q24 92 18 106 Q14 118 18 128 L30 126 Q28 116 30 106 Q34 94 44 84 Z",
+    rightArm: "M158 82 Q168 92 174 106 Q178 118 174 128 L162 126 Q164 116 162 106 Q158 94 148 84 Z",
+    leftForearm: "M18 128 Q16 142 22 154 L34 150 Q30 140 30 126 Z",
+    rightForearm: "M174 128 Q176 142 170 154 L158 150 Q162 140 162 126 Z",
+    leftHand: { cx: 28, cy: 160 },
+    rightHand: { cx: 164, cy: 160 },
+    leftLeg: "M68 172 Q66 210 66 248 L86 248 Q88 220 86 200 Q82 180 78 172 Z",
+    rightLeg: "M114 172 Q112 210 112 248 L132 248 Q134 220 132 200 Q128 180 122 172 Z",
+    leftCalf: "M68 252 Q66 274 68 300 L86 300 Q88 280 86 256 Z",
+    rightCalf: "M114 252 Q112 274 114 300 L132 300 Q134 280 132 256 Z",
+    leftFoot: { cx: 77, cy: 308 },
+    rightFoot: { cx: 123, cy: 308 },
+  },
+  {
+    // Side tricep
+    name: "Side Tricep",
+    head: { cx: 100, cy: 28 },
+    neck: { x: 91, y: 46, w: 18, h: 14 },
+    torso: "M78 66 L122 66 L126 170 L74 170 Z",
+    leftArm: "M42 84 Q34 92 30 104 Q28 114 32 122 L42 120 Q40 112 42 104 Q46 94 52 86 Z",
+    rightArm: "M150 84 Q158 78 164 68 Q168 58 166 50 L156 48 Q158 58 154 66 Q150 74 142 82 Z",
+    leftForearm: "M32 122 Q28 134 30 146 L42 146 Q42 136 42 120 Z",
+    rightForearm: "M166 50 Q170 40 168 30 L156 28 Q158 38 156 48 Z",
+    leftHand: { cx: 36, cy: 154 },
+    rightHand: { cx: 162, cy: 24 },
+    leftLeg: "M74 172 Q72 210 72 248 L90 248 Q92 220 90 200 Q86 180 84 172 Z",
+    rightLeg: "M110 172 Q108 210 108 248 L126 248 Q128 220 126 200 Q122 180 116 172 Z",
+    leftCalf: "M74 252 Q72 274 74 300 L90 300 Q92 280 90 256 Z",
+    rightCalf: "M110 252 Q108 274 110 300 L126 300 Q128 280 126 256 Z",
+    leftFoot: { cx: 82, cy: 308 },
+    rightFoot: { cx: 118, cy: 308 },
+  },
+  {
+    // Abs and thigh
+    name: "Abs & Thigh",
+    head: { cx: 100, cy: 28 },
+    neck: { x: 91, y: 46, w: 18, h: 14 },
+    torso: "M78 66 L122 66 L126 170 L74 170 Z",
+    leftArm: "M42 84 Q28 78 20 66 Q16 56 20 48 L30 50 Q28 58 32 66 Q38 76 48 82 Z",
+    rightArm: "M150 84 Q164 78 172 66 Q176 56 172 48 L162 50 Q164 58 160 66 Q154 76 144 82 Z",
+    leftForearm: "M20 48 Q16 38 20 28 L30 26 Q28 36 30 50 Z",
+    rightForearm: "M172 48 Q176 38 172 28 L162 26 Q164 36 162 50 Z",
+    leftHand: { cx: 24, cy: 22 },
+    rightHand: { cx: 168, cy: 22 },
+    leftLeg: "M74 172 Q66 210 62 248 L80 248 Q84 220 84 200 Q82 180 80 172 Z",
+    rightLeg: "M120 172 Q118 210 118 248 L136 248 Q138 220 136 200 Q132 180 126 172 Z",
+    leftCalf: "M64 252 Q62 274 64 300 L80 300 Q82 280 80 256 Z",
+    rightCalf: "M120 252 Q118 274 120 300 L136 300 Q138 280 136 256 Z",
+    leftFoot: { cx: 72, cy: 308 },
+    rightFoot: { cx: 128, cy: 308 },
+  },
+  {
+    // Victory / Arms up
+    name: "Victory",
+    head: { cx: 100, cy: 28 },
+    neck: { x: 91, y: 46, w: 18, h: 14 },
+    torso: "M78 66 L122 66 L126 170 L74 170 Z",
+    leftArm: "M42 82 Q30 70 24 54 Q20 40 24 30 L34 32 Q32 42 34 52 Q38 66 48 78 Z",
+    rightArm: "M150 82 Q162 70 168 54 Q172 40 168 30 L158 32 Q160 42 158 52 Q154 66 144 78 Z",
+    leftForearm: "M24 30 Q20 18 24 8 L34 6 Q32 16 34 32 Z",
+    rightForearm: "M168 30 Q172 18 168 8 L158 6 Q160 16 158 32 Z",
+    leftHand: { cx: 28, cy: 4 },
+    rightHand: { cx: 164, cy: 4 },
+    leftLeg: "M74 172 Q72 210 72 248 L90 248 Q92 220 90 200 Q86 180 84 172 Z",
+    rightLeg: "M110 172 Q108 210 108 248 L126 248 Q128 220 126 200 Q122 180 116 172 Z",
+    leftCalf: "M74 252 Q72 274 74 300 L90 300 Q92 280 90 256 Z",
+    rightCalf: "M110 252 Q108 274 110 300 L126 300 Q128 280 126 256 Z",
+    leftFoot: { cx: 82, cy: 308 },
+    rightFoot: { cx: 118, cy: 308 },
+  },
 ];
 
 const BodySelector = () => {
@@ -57,8 +239,23 @@ const BodySelector = () => {
   const [bouncingId, setBouncingId] = useState<string | null>(null);
   const [animatingPart, setAnimatingPart] = useState<string | null>(null);
   const [hoveredPart, setHoveredPart] = useState<string | null>(null);
+  const [poseIndex, setPoseIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const handlePartClick = (id: string) => {
+  // Cycle poses every 5 seconds when idle (no part selected)
+  useEffect(() => {
+    if (selectedPart || step !== "body") return;
+    const timer = setInterval(() => {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setPoseIndex(prev => (prev + 1) % poses.length);
+        setIsTransitioning(false);
+      }, 400);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [selectedPart, step]);
+
+  const handlePartClick = useCallback((id: string) => {
     setAnimatingPart(id);
     setBouncingId(id);
     setTimeout(() => {
@@ -69,7 +266,7 @@ const BodySelector = () => {
         setStep("equipment");
       }, 400);
     }, 300);
-  };
+  }, []);
 
   const handleEquipmentClick = (id: string) => {
     setBouncingId(id);
@@ -125,11 +322,6 @@ const BodySelector = () => {
     return s === "active" ? 2.5 : s === "selected" ? 2 : s === "hovered" ? 1.5 : 0.8;
   };
 
-  const scaleFor = (id: string) => {
-    const s = partState(id);
-    return s === "active" ? "scale(1.06)" : s === "selected" ? "scale(1.03)" : "scale(1)";
-  };
-
   const glowFilter = (id: string) => {
     const s = partState(id);
     if (s === "active") return "drop-shadow(0 0 8px hsl(var(--primary) / 0.7))";
@@ -146,14 +338,12 @@ const BodySelector = () => {
       fill: fillFor(id),
       stroke: strokeFor(id),
       strokeWidth: strokeW(id),
-      transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-      transform: scaleFor(id),
-      transformOrigin: "center",
+      transition: "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
       filter: glowFilter(id),
     } as React.CSSProperties,
   });
 
-  // Label line data: from body part center to label position
+  // Label line data
   const labelData: { id: string; label: string; cx: number; cy: number; lx: number; ly: number; align: "left" | "right" }[] = [
     { id: "neck", label: "Neck", cx: 100, cy: 58, lx: 160, ly: 50, align: "right" },
     { id: "traps", label: "Traps", cx: 100, cy: 72, lx: 160, ly: 68, align: "right" },
@@ -175,164 +365,165 @@ const BodySelector = () => {
   ];
 
   const activeLabel = labelData.find(l => l.id === (hoveredPart || selectedPart || animatingPart));
+  const pose = poses[poseIndex];
 
   const BodyModel = () => (
-    <svg viewBox="0 0 200 370" className="w-full h-full">
+    <svg viewBox="0 0 200 320" className="w-full h-full" style={{
+      opacity: isTransitioning ? 0.6 : 1,
+      transform: isTransitioning ? "scale(0.98)" : "scale(1)",
+      transition: "all 0.4s ease-in-out",
+    }}>
       <defs>
         <radialGradient id="bodyAura" cx="50%" cy="40%" r="55%">
           <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.06" />
           <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
         </radialGradient>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-        </filter>
       </defs>
 
-      {/* Ambient background aura */}
-      <ellipse cx="100" cy="180" rx="90" ry="170" fill="url(#bodyAura)" />
-
-      {/* === WIREFRAME BODY STRUCTURE === */}
+      <ellipse cx="100" cy="160" rx="90" ry="155" fill="url(#bodyAura)" />
 
       {/* Head */}
-      <ellipse cx="100" cy="28" rx="14" ry="18" fill="none" stroke="hsl(var(--primary) / 0.25)" strokeWidth="1.2">
-        <animate attributeName="ry" values="18;18.5;18" dur="3s" repeatCount="indefinite" />
-      </ellipse>
-      {/* Face lines */}
-      <line x1="95" y1="24" x2="95" y2="26" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.8" />
-      <line x1="105" y1="24" x2="105" y2="26" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.8" />
-      <path d="M96 32 Q100 35 104 32" fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6" />
+      <ellipse cx={pose.head.cx} cy={pose.head.cy} rx="14" ry="18"
+        fill="none" stroke="hsl(var(--primary) / 0.25)" strokeWidth="1.2"
+        style={{ transition: "all 0.8s ease-in-out" }}
+      />
+      {/* Face */}
+      <line x1={pose.head.cx - 5} y1={pose.head.cy - 4} x2={pose.head.cx - 5} y2={pose.head.cy - 2}
+        stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.8" style={{ transition: "all 0.8s ease-in-out" }} />
+      <line x1={pose.head.cx + 5} y1={pose.head.cy - 4} x2={pose.head.cx + 5} y2={pose.head.cy - 2}
+        stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.8" style={{ transition: "all 0.8s ease-in-out" }} />
 
       {/* Neck */}
-      <rect x="91" y="46" width="18" height="14" rx="4" {...partProps("neck")} />
+      <rect x={pose.neck.x} y={pose.neck.y} width={pose.neck.w} height={pose.neck.h} rx="4"
+        {...partProps("neck")} style={{ ...partProps("neck").style, transition: "all 0.8s ease-in-out" }} />
 
-      {/* Traps */}
-      <path d="M76 66 L91 54 L100 52 L109 54 L124 66 L120 76 L80 76 Z" {...partProps("traps")} />
+      {/* Traps - always same region on torso top */}
+      <path d={`M${pose.neck.x - 13} ${pose.neck.y + pose.neck.h + 6} L${pose.neck.x} ${pose.neck.y + 2} L${pose.neck.x + pose.neck.w} ${pose.neck.y + 2} L${pose.neck.x + pose.neck.w + 13} ${pose.neck.y + pose.neck.h + 6} Z`}
+        {...partProps("traps")} style={{ ...partProps("traps").style, transition: "all 0.8s ease-in-out" }} />
 
       {/* Shoulders */}
-      <ellipse cx="60" cy="82" rx="20" ry="13" {...partProps("shoulders")} />
-      <ellipse cx="140" cy="82" rx="20" ry="13" {...partProps("shoulders")} />
+      <ellipse cx={pose.neck.x - 18} cy={pose.neck.y + pose.neck.h + 14} rx="18" ry="12"
+        {...partProps("shoulders")} style={{ ...partProps("shoulders").style, transition: "all 0.8s ease-in-out" }} />
+      <ellipse cx={pose.neck.x + pose.neck.w + 18} cy={pose.neck.y + pose.neck.h + 14} rx="18" ry="12"
+        {...partProps("shoulders")} style={{ ...partProps("shoulders").style, transition: "all 0.8s ease-in-out" }} />
 
-      {/* Rear Delts - arcs */}
-      <path d="M42 78 Q50 70 58 78" fill="none" {...partProps("rear-delts")} />
-      <path d="M142 78 Q150 70 158 78" fill="none" {...partProps("rear-delts")} />
+      {/* Rear Delts */}
+      <path d={`M${pose.neck.x - 32} ${pose.neck.y + pose.neck.h + 10} Q${pose.neck.x - 24} ${pose.neck.y + pose.neck.h + 2} ${pose.neck.x - 16} ${pose.neck.y + pose.neck.h + 10}`}
+        fill="none" {...partProps("rear-delts")} style={{ ...partProps("rear-delts").style, transition: "all 0.8s ease-in-out" }} />
+      <path d={`M${pose.neck.x + pose.neck.w + 16} ${pose.neck.y + pose.neck.h + 10} Q${pose.neck.x + pose.neck.w + 24} ${pose.neck.y + pose.neck.h + 2} ${pose.neck.x + pose.neck.w + 32} ${pose.neck.y + pose.neck.h + 10}`}
+        fill="none" {...partProps("rear-delts")} style={{ ...partProps("rear-delts").style, transition: "all 0.8s ease-in-out" }} />
 
-      {/* Chest - two pec slabs */}
-      <path d="M80 82 L98 82 L96 112 Q88 118 80 108 Z" {...partProps("chest")} />
-      <path d="M102 82 L120 82 L120 108 Q112 118 104 112 Z" {...partProps("chest")} />
-      {/* Chest separation line */}
-      <line x1="100" y1="82" x2="100" y2="115" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.5" />
+      {/* Chest */}
+      <path d="M82 82 L98 82 L96 110 Q88 116 82 108 Z"
+        {...partProps("chest")} style={{ ...partProps("chest").style, transition: "all 0.8s ease-in-out" }} />
+      <path d="M102 82 L118 82 L118 108 Q112 116 104 110 Z"
+        {...partProps("chest")} style={{ ...partProps("chest").style, transition: "all 0.8s ease-in-out" }} />
+      <line x1="100" y1="82" x2="100" y2="112" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.5" />
 
-      {/* Back - invisible hitbox */}
-      <rect x="82" y="84" width="36" height="26" rx="4" opacity="0" {...partProps("back")} />
+      {/* Back hitbox */}
+      <rect x="84" y="84" width="32" height="24" rx="4" opacity="0" {...partProps("back")} />
 
       {/* Lats */}
-      <path d="M72 92 L80 92 L80 142 L76 154 L70 140 Z" {...partProps("lats")} />
-      <path d="M120 92 L128 92 L130 140 L124 154 L120 142 Z" {...partProps("lats")} />
+      <path d="M72 92 L80 92 L80 140 L76 150 L70 138 Z"
+        {...partProps("lats")} style={{ ...partProps("lats").style, transition: "all 0.8s ease-in-out" }} />
+      <path d="M120 92 L128 92 L130 138 L124 150 L120 140 Z"
+        {...partProps("lats")} style={{ ...partProps("lats").style, transition: "all 0.8s ease-in-out" }} />
 
-      {/* Arms / Biceps */}
-      <path d="M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z" {...partProps("arms")}>
-        <animate attributeName="d" values="M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z;M42 89 Q35 105 35 119 Q37 133 43 137 L53 137 Q57 127 55 113 Q53 101 49 89 Z;M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z" dur="4s" repeatCount="indefinite" />
-      </path>
-      <path d="M150 90 Q156 106 156 120 Q154 134 148 138 L138 138 Q134 128 136 114 Q138 102 142 90 Z" {...partProps("arms")}>
-        <animate attributeName="d" values="M150 90 Q156 106 156 120 Q154 134 148 138 L138 138 Q134 128 136 114 Q138 102 142 90 Z;M151 89 Q157 105 157 119 Q155 133 149 137 L139 137 Q135 127 137 113 Q139 101 143 89 Z;M150 90 Q156 106 156 120 Q154 134 148 138 L138 138 Q134 128 136 114 Q138 102 142 90 Z" dur="4s" repeatCount="indefinite" />
-      </path>
+      {/* Arms */}
+      <path d={pose.leftArm} {...partProps("arms")}
+        style={{ ...partProps("arms").style, transition: "all 0.8s ease-in-out" }} />
+      <path d={pose.rightArm} {...partProps("arms")}
+        style={{ ...partProps("arms").style, transition: "all 0.8s ease-in-out" }} />
 
       {/* Forearms */}
-      <path d="M44 142 Q40 160 38 178 L50 178 Q52 164 52 146 Z" {...partProps("forearms")} />
-      <path d="M148 142 Q152 160 154 178 L142 178 Q140 164 140 146 Z" {...partProps("forearms")} />
+      <path d={pose.leftForearm} {...partProps("forearms")}
+        style={{ ...partProps("forearms").style, transition: "all 0.8s ease-in-out" }} />
+      <path d={pose.rightForearm} {...partProps("forearms")}
+        style={{ ...partProps("forearms").style, transition: "all 0.8s ease-in-out" }} />
 
       {/* Hands */}
-      <ellipse cx="44" cy="186" rx="7" ry="8" fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6" />
-      <ellipse cx="148" cy="186" rx="7" ry="8" fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6" />
+      <ellipse cx={pose.leftHand.cx} cy={pose.leftHand.cy} rx="6" ry="7"
+        fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6"
+        style={{ transition: "all 0.8s ease-in-out" }} />
+      <ellipse cx={pose.rightHand.cx} cy={pose.rightHand.cy} rx="6" ry="7"
+        fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6"
+        style={{ transition: "all 0.8s ease-in-out" }} />
 
-      {/* Core / Abs */}
-      <rect x="86" y="118" width="28" height="42" rx="4" {...partProps("core")} />
-      {/* Ab grid */}
-      <line x1="100" y1="120" x2="100" y2="158" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.5" />
-      <line x1="88" y1="130" x2="112" y2="130" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
-      <line x1="88" y1="140" x2="112" y2="140" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
-      <line x1="88" y1="150" x2="112" y2="150" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
+      {/* Core */}
+      <rect x="86" y="116" width="28" height="40" rx="4" {...partProps("core")} />
+      <line x1="100" y1="118" x2="100" y2="154" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.5" />
+      <line x1="88" y1="128" x2="112" y2="128" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
+      <line x1="88" y1="138" x2="112" y2="138" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
+      <line x1="88" y1="148" x2="112" y2="148" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
 
       {/* Obliques */}
-      <path d="M78 118 L86 118 L84 162 L76 150 Z" {...partProps("obliques")} />
-      <path d="M114 118 L122 118 L124 150 L116 162 Z" {...partProps("obliques")} />
+      <path d="M78 116 L86 116 L84 158 L76 148 Z" {...partProps("obliques")} />
+      <path d="M114 116 L122 116 L124 148 L116 158 Z" {...partProps("obliques")} />
 
       {/* Lower Back */}
-      <rect x="88" y="152" width="24" height="14" rx="3" {...partProps("lower-back")} />
+      <rect x="88" y="150" width="24" height="14" rx="3" {...partProps("lower-back")} />
 
       {/* Hip Flexors */}
-      <ellipse cx="88" cy="176" rx="9" ry="7" {...partProps("hip-flexors")} />
-      <ellipse cx="112" cy="176" rx="9" ry="7" {...partProps("hip-flexors")} />
+      <ellipse cx="88" cy="174" rx="9" ry="6" {...partProps("hip-flexors")} />
+      <ellipse cx="112" cy="174" rx="9" ry="6" {...partProps("hip-flexors")} />
 
       {/* Glutes */}
-      <ellipse cx="90" cy="192" rx="15" ry="12" {...partProps("glutes")} />
-      <ellipse cx="110" cy="192" rx="15" ry="12" {...partProps("glutes")} />
+      <ellipse cx="90" cy="186" rx="14" ry="10" {...partProps("glutes")} />
+      <ellipse cx="110" cy="186" rx="14" ry="10" {...partProps("glutes")} />
 
       {/* Quads */}
-      <path d="M74 204 Q72 234 72 262 L92 262 Q94 244 94 224 Q92 212 88 204 Z" {...partProps("legs")}>
-        <animate attributeName="d" values="M74 204 Q72 234 72 262 L92 262 Q94 244 94 224 Q92 212 88 204 Z;M74 203 Q71 233 71 261 L91 261 Q93 243 93 223 Q91 211 87 203 Z;M74 204 Q72 234 72 262 L92 262 Q94 244 94 224 Q92 212 88 204 Z" dur="5s" repeatCount="indefinite" />
-      </path>
-      <path d="M112 204 Q108 234 108 262 L128 262 Q130 244 130 224 Q128 212 126 204 Z" {...partProps("legs")}>
-        <animate attributeName="d" values="M112 204 Q108 234 108 262 L128 262 Q130 244 130 224 Q128 212 126 204 Z;M112 203 Q107 233 107 261 L127 261 Q129 243 129 223 Q127 211 125 203 Z;M112 204 Q108 234 108 262 L128 262 Q130 244 130 224 Q128 212 126 204 Z" dur="5s" repeatCount="indefinite" />
-      </path>
-      {/* Quad separation lines */}
-      <line x1="82" y1="212" x2="82" y2="258" stroke="hsl(var(--primary) / 0.08)" strokeWidth="0.4" />
-      <line x1="118" y1="212" x2="118" y2="258" stroke="hsl(var(--primary) / 0.08)" strokeWidth="0.4" />
+      <path d={pose.leftLeg} {...partProps("legs")}
+        style={{ ...partProps("legs").style, transition: "all 0.8s ease-in-out" }} />
+      <path d={pose.rightLeg} {...partProps("legs")}
+        style={{ ...partProps("legs").style, transition: "all 0.8s ease-in-out" }} />
 
       {/* Hamstrings */}
-      <path d="M74 206 L72 204 L70 244 L74 258 L78 244 Z" {...partProps("hamstrings")} />
-      <path d="M126 206 L128 204 L130 244 L126 258 L122 244 Z" {...partProps("hamstrings")} />
+      <path d="M74 200 L72 198 L70 236 L74 248 L78 236 Z" {...partProps("hamstrings")} />
+      <path d="M126 200 L128 198 L130 236 L126 248 L122 236 Z" {...partProps("hamstrings")} />
 
       {/* Calves */}
-      <path d="M74 266 Q72 284 72 304 Q74 322 82 326 L92 326 Q96 316 94 296 Q92 278 90 266 Z" {...partProps("calves")}>
-        <animate attributeName="d" values="M74 266 Q72 284 72 304 Q74 322 82 326 L92 326 Q96 316 94 296 Q92 278 90 266 Z;M74 265 Q71 283 71 303 Q73 321 81 325 L91 325 Q95 315 93 295 Q91 277 89 265 Z;M74 266 Q72 284 72 304 Q74 322 82 326 L92 326 Q96 316 94 296 Q92 278 90 266 Z" dur="4.5s" repeatCount="indefinite" />
-      </path>
-      <path d="M110 266 Q108 284 108 304 Q110 322 118 326 L128 326 Q132 316 130 296 Q128 278 126 266 Z" {...partProps("calves")}>
-        <animate attributeName="d" values="M110 266 Q108 284 108 304 Q110 322 118 326 L128 326 Q132 316 130 296 Q128 278 126 266 Z;M110 265 Q107 283 107 303 Q109 321 117 325 L127 325 Q131 315 129 295 Q127 277 125 265 Z;M110 266 Q108 284 108 304 Q110 322 118 326 L128 326 Q132 316 130 296 Q128 278 126 266 Z" dur="4.5s" repeatCount="indefinite" />
-      </path>
+      <path d={pose.leftCalf} {...partProps("calves")}
+        style={{ ...partProps("calves").style, transition: "all 0.8s ease-in-out" }} />
+      <path d={pose.rightCalf} {...partProps("calves")}
+        style={{ ...partProps("calves").style, transition: "all 0.8s ease-in-out" }} />
 
       {/* Feet */}
-      <ellipse cx="82" cy="336" rx="12" ry="5" fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6" />
-      <ellipse cx="118" cy="336" rx="12" ry="5" fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6" />
+      <ellipse cx={pose.leftFoot.cx} cy={pose.leftFoot.cy} rx="11" ry="5"
+        fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6"
+        style={{ transition: "all 0.8s ease-in-out" }} />
+      <ellipse cx={pose.rightFoot.cx} cy={pose.rightFoot.cy} rx="11" ry="5"
+        fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6"
+        style={{ transition: "all 0.8s ease-in-out" }} />
 
-      {/* === LABEL LINE + TEXT for active/hovered/selected part === */}
+      {/* Label with connector line */}
       {activeLabel && (
-        <g className="animate-fade-in" style={{ transition: "all 0.3s ease" }}>
-          {/* Connector line */}
-          <line
-            x1={activeLabel.cx} y1={activeLabel.cy}
-            x2={activeLabel.lx} y2={activeLabel.ly}
-            stroke="hsl(var(--primary))" strokeWidth="1" strokeDasharray="3,2" opacity="0.7"
-          >
+        <g>
+          <line x1={activeLabel.cx} y1={activeLabel.cy} x2={activeLabel.lx} y2={activeLabel.ly}
+            stroke="hsl(var(--primary))" strokeWidth="1" strokeDasharray="3,2" opacity="0.7">
             <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
           </line>
-          {/* Dot at muscle */}
           <circle cx={activeLabel.cx} cy={activeLabel.cy} r="3" fill="hsl(var(--primary))" opacity="0.9">
             <animate attributeName="r" values="3;4;3" dur="1.2s" repeatCount="indefinite" />
           </circle>
-          {/* Label background */}
           <rect
             x={activeLabel.align === "left" ? activeLabel.lx - 4 : activeLabel.lx - 2}
-            y={activeLabel.ly - 8}
-            width={activeLabel.label.length * 6.5 + 10}
-            height="16" rx="4"
-            fill="hsl(var(--primary))" opacity="0.9"
-          />
-          {/* Label text */}
-          <text
-            x={activeLabel.align === "left" ? activeLabel.lx + 1 : activeLabel.lx + 3}
-            y={activeLabel.ly + 3}
-            fill="hsl(var(--primary-foreground))"
-            fontSize="8" fontWeight="700" fontFamily="Inter, sans-serif"
-          >
+            y={activeLabel.ly - 8} width={activeLabel.label.length * 6.5 + 10} height="16" rx="4"
+            fill="hsl(var(--primary))" opacity="0.9" />
+          <text x={activeLabel.align === "left" ? activeLabel.lx + 1 : activeLabel.lx + 3} y={activeLabel.ly + 3}
+            fill="hsl(var(--primary-foreground))" fontSize="8" fontWeight="700" fontFamily="Inter, sans-serif">
             {activeLabel.label}
           </text>
         </g>
       )}
 
-      {/* Subtle breathing animation on the whole body */}
-      <animateTransform attributeName="transform" type="scale" values="1,1;1.003,1.005;1,1" dur="3s" repeatCount="indefinite" additive="sum" />
+      {/* Pose name indicator */}
+      {!selectedPart && !hoveredPart && (
+        <text x="100" y="340" textAnchor="middle" fill="hsl(var(--muted-foreground))"
+          fontSize="7" fontWeight="600" fontFamily="Inter, sans-serif"
+          style={{ opacity: isTransitioning ? 0 : 0.6, transition: "opacity 0.3s ease" }}>
+          {pose.name} Pose
+        </text>
+      )}
     </svg>
   );
 
@@ -353,7 +544,7 @@ const BodySelector = () => {
         {step === "body" && (
           <div className="mt-4 animate-fade-in">
             <p className="text-center text-xs text-muted-foreground mb-2">Tap a muscle group to target</p>
-            <div className="relative mx-auto" style={{ maxWidth: 300, height: 440 }}>
+            <div className="relative mx-auto" style={{ maxWidth: 300, height: 420 }}>
               <BodyModel />
             </div>
 
