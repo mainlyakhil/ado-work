@@ -39,6 +39,8 @@ const dietTypes: Record<DietType, { label: string; emoji: string; desc: string }
   vegan: { label: "Plant-Based", emoji: "🌱", desc: "100% vegan meals" },
   paleo: { label: "Paleo", emoji: "🍖", desc: "Whole foods, no grains" },
   mediterranean: { label: "Mediterranean", emoji: "🫒", desc: "Heart-healthy fats" },
+  carnivore: { label: "Carnivore", emoji: "🥩", desc: "All-meat, zero carbs" },
+  intermittent: { label: "Intermittent Fast", emoji: "⏰", desc: "16:8 eating window" },
 };
 
 const mealPlans: Record<DietType, Record<Goal, Meal[]>> = {
