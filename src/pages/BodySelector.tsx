@@ -226,16 +226,12 @@ const BodySelector = () => {
   const [poseIndex, setPoseIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Cycle poses every 5 seconds when idle (no part selected)
+  // Cycle poses — just swap index; CSS transition handles the smoothness
   useEffect(() => {
     if (selectedPart || step !== "body") return;
     const timer = setInterval(() => {
-      setIsTransitioning(true);
-      setTimeout(() => {
-        setPoseIndex(prev => (prev + 1) % poses.length);
-        setIsTransitioning(false);
-      }, 400);
-    }, 5000);
+      setPoseIndex(prev => (prev + 1) % poses.length);
+    }, 4000);
     return () => clearInterval(timer);
   }, [selectedPart, step]);
 
