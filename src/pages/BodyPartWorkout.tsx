@@ -13,41 +13,40 @@ interface Exercise {
 
 const bodyPartData: Record<string, { title: string; emoji: string; exercises: Exercise[] }> = {
   chest: {
-    title: "Chest",
-    emoji: "🫁",
+    title: "Chest", emoji: "🫁",
     exercises: [
       { name: "Barbell Bench Press", sets: 4, reps: "8-10", completed: false },
       { name: "Incline Dumbbell Press", sets: 3, reps: "10-12", completed: false },
       { name: "Cable Flyes", sets: 3, reps: "12-15", completed: false },
       { name: "Push Ups (Wide)", sets: 3, reps: "15-20", completed: false },
       { name: "Dumbbell Pullover", sets: 3, reps: "12", completed: false },
+      { name: "Pec Deck Machine", sets: 3, reps: "12-15", completed: false },
     ],
   },
   back: {
-    title: "Back",
-    emoji: "🔙",
+    title: "Back", emoji: "🔙",
     exercises: [
       { name: "Deadlifts", sets: 4, reps: "6-8", completed: false },
       { name: "Pull Ups", sets: 4, reps: "8-12", completed: false },
       { name: "Barbell Rows", sets: 3, reps: "10-12", completed: false },
       { name: "Lat Pulldown", sets: 3, reps: "12", completed: false },
       { name: "Seated Cable Row", sets: 3, reps: "12-15", completed: false },
+      { name: "T-Bar Row", sets: 3, reps: "10-12", completed: false },
     ],
   },
   shoulders: {
-    title: "Shoulders",
-    emoji: "🤷",
+    title: "Shoulders", emoji: "🤷",
     exercises: [
       { name: "Overhead Press", sets: 4, reps: "8-10", completed: false },
       { name: "Lateral Raises", sets: 4, reps: "12-15", completed: false },
       { name: "Face Pulls", sets: 3, reps: "15", completed: false },
       { name: "Front Raises", sets: 3, reps: "12", completed: false },
       { name: "Arnold Press", sets: 3, reps: "10-12", completed: false },
+      { name: "Reverse Pec Deck", sets: 3, reps: "12-15", completed: false },
     ],
   },
   arms: {
-    title: "Arms",
-    emoji: "💪",
+    title: "Arms", emoji: "💪",
     exercises: [
       { name: "Barbell Curls", sets: 3, reps: "10-12", completed: false },
       { name: "Skull Crushers", sets: 3, reps: "10-12", completed: false },
@@ -57,27 +56,78 @@ const bodyPartData: Record<string, { title: string; emoji: string; exercises: Ex
       { name: "Overhead Tricep Extension", sets: 3, reps: "12", completed: false },
     ],
   },
+  forearms: {
+    title: "Forearms", emoji: "🦾",
+    exercises: [
+      { name: "Wrist Curls", sets: 4, reps: "15-20", completed: false },
+      { name: "Reverse Wrist Curls", sets: 3, reps: "15", completed: false },
+      { name: "Farmer's Walk", sets: 3, reps: "40m", completed: false },
+      { name: "Plate Pinch Hold", sets: 3, reps: "30 sec", completed: false },
+      { name: "Towel Pull-ups", sets: 3, reps: "8-10", completed: false },
+    ],
+  },
   legs: {
-    title: "Legs",
-    emoji: "🦵",
+    title: "Legs", emoji: "🦵",
     exercises: [
       { name: "Barbell Squats", sets: 4, reps: "8-10", completed: false },
       { name: "Romanian Deadlifts", sets: 3, reps: "10-12", completed: false },
       { name: "Leg Press", sets: 3, reps: "12", completed: false },
       { name: "Walking Lunges", sets: 3, reps: "12 each", completed: false },
       { name: "Leg Curls", sets: 3, reps: "12-15", completed: false },
+      { name: "Leg Extensions", sets: 3, reps: "12-15", completed: false },
       { name: "Calf Raises", sets: 4, reps: "15-20", completed: false },
     ],
   },
   core: {
-    title: "Core",
-    emoji: "🔥",
+    title: "Core", emoji: "🔥",
     exercises: [
       { name: "Plank", sets: 3, reps: "60 sec", completed: false },
       { name: "Hanging Leg Raises", sets: 3, reps: "12-15", completed: false },
       { name: "Russian Twists", sets: 3, reps: "20", completed: false },
       { name: "Ab Wheel Rollout", sets: 3, reps: "10-12", completed: false },
       { name: "Cable Woodchops", sets: 3, reps: "12 each", completed: false },
+      { name: "Bicycle Crunches", sets: 3, reps: "20", completed: false },
+    ],
+  },
+  glutes: {
+    title: "Glutes", emoji: "🍑",
+    exercises: [
+      { name: "Hip Thrusts", sets: 4, reps: "10-12", completed: false },
+      { name: "Bulgarian Split Squats", sets: 3, reps: "10 each", completed: false },
+      { name: "Sumo Deadlifts", sets: 3, reps: "10-12", completed: false },
+      { name: "Cable Kickbacks", sets: 3, reps: "12 each", completed: false },
+      { name: "Glute Bridge", sets: 3, reps: "15", completed: false },
+      { name: "Step Ups", sets: 3, reps: "12 each", completed: false },
+    ],
+  },
+  calves: {
+    title: "Calves", emoji: "🏔️",
+    exercises: [
+      { name: "Standing Calf Raises", sets: 4, reps: "15-20", completed: false },
+      { name: "Seated Calf Raises", sets: 4, reps: "15-20", completed: false },
+      { name: "Donkey Calf Raises", sets: 3, reps: "15", completed: false },
+      { name: "Single Leg Calf Raise", sets: 3, reps: "12 each", completed: false },
+      { name: "Jump Rope", sets: 3, reps: "60 sec", completed: false },
+    ],
+  },
+  neck: {
+    title: "Neck", emoji: "🦴",
+    exercises: [
+      { name: "Neck Flexion (Plate)", sets: 3, reps: "12-15", completed: false },
+      { name: "Neck Extension", sets: 3, reps: "12-15", completed: false },
+      { name: "Lateral Neck Flexion", sets: 3, reps: "12 each", completed: false },
+      { name: "Neck Harness", sets: 3, reps: "15", completed: false },
+      { name: "Shrugs", sets: 4, reps: "12-15", completed: false },
+    ],
+  },
+  traps: {
+    title: "Traps", emoji: "🔺",
+    exercises: [
+      { name: "Barbell Shrugs", sets: 4, reps: "12-15", completed: false },
+      { name: "Dumbbell Shrugs", sets: 3, reps: "15", completed: false },
+      { name: "Face Pulls", sets: 3, reps: "15", completed: false },
+      { name: "Upright Rows", sets: 3, reps: "12", completed: false },
+      { name: "Farmer's Walk", sets: 3, reps: "40m", completed: false },
     ],
   },
 };
@@ -129,9 +179,7 @@ const BodyPartWorkout = () => {
     <MobileLayout>
       <div className="animate-fade-in px-4 pt-4">
         <div className="flex items-center justify-between">
-          <button onClick={() => navigate(-1)} className="p-1">
-            <ChevronLeft className="h-5 w-5" />
-          </button>
+          <button onClick={() => navigate(-1)} className="p-1"><ChevronLeft className="h-5 w-5" /></button>
           <h1 className="text-base font-bold">{data.emoji} {data.title} Workout</h1>
           <div className="w-6" />
         </div>
@@ -141,9 +189,7 @@ const BodyPartWorkout = () => {
             <ProgressRing progress={progress} size={80} strokeWidth={5} />
             <div className="flex-1">
               <h3 className="text-sm font-bold">{data.title} Day</h3>
-              <p className="mt-1 text-2xl font-bold gym-text-gradient">
-                {completedCount}/{exercises.length}
-              </p>
+              <p className="mt-1 text-2xl font-bold gym-text-gradient">{completedCount}/{exercises.length}</p>
               <p className="text-[10px] text-muted-foreground">exercises done</p>
             </div>
           </div>

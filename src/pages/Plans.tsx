@@ -1,4 +1,4 @@
-import { ChevronLeft, Clock, Flame, Dumbbell, Star, Zap, Trophy, Moon } from "lucide-react";
+import { ChevronLeft, Clock, Flame, Dumbbell, Star, Zap, Trophy, Moon, Heart, Mountain, Shield, Bike } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
@@ -22,6 +22,11 @@ const plans: Plan[] = [
   { id: "muscle", name: "Muscle Builder Pro", duration: "8 Weeks", level: "Advanced", calories: 380, exercises: 7, icon: Zap, color: "text-gym-gold", days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], description: "Advanced hypertrophy with progressive overload." },
   { id: "full-body", name: "Full Body Flex", duration: "4 Weeks", level: "All Levels", calories: 320, exercises: 6, icon: Star, color: "text-gym-green", days: ["Mon", "Wed", "Fri", "Sat"], description: "Balanced full-body strength, flexibility, and endurance." },
   { id: "athlete", name: "Athlete Performance", duration: "12 Weeks", level: "Advanced", calories: 500, exercises: 10, icon: Trophy, color: "text-primary", days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], description: "Elite training with plyometrics, agility, and drills." },
+  { id: "cardio-king", name: "Cardio King", duration: "6 Weeks", level: "Intermediate", calories: 520, exercises: 6, icon: Heart, color: "text-destructive", days: ["Mon", "Tue", "Wed", "Fri", "Sat"], description: "Improve cardiovascular endurance with progressive cardio sessions." },
+  { id: "calisthenics", name: "Calisthenics Master", duration: "10 Weeks", level: "Intermediate", calories: 340, exercises: 8, icon: Mountain, color: "text-gym-green", days: ["Mon", "Tue", "Thu", "Fri", "Sat"], description: "Master bodyweight skills: muscle-ups, handstands, and levers." },
+  { id: "powerlifter", name: "Powerlifter Path", duration: "16 Weeks", level: "Advanced", calories: 480, exercises: 5, icon: Shield, color: "text-gym-gold", days: ["Mon", "Wed", "Fri"], description: "Maximize your squat, bench, and deadlift with periodization." },
+  { id: "endurance", name: "Endurance Builder", duration: "8 Weeks", level: "Beginner", calories: 380, exercises: 7, icon: Bike, color: "text-primary", days: ["Mon", "Wed", "Thu", "Sat"], description: "Build stamina with progressive running and cycling plans." },
+  { id: "shred", name: "30-Day Shred", duration: "4 Weeks", level: "Intermediate", calories: 550, exercises: 9, icon: Flame, color: "text-destructive", days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], description: "Intense cutting program combining HIIT and strength training." },
 ];
 
 const Plans = () => {
