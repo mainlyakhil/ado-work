@@ -144,11 +144,20 @@ const Profile = () => {
     }));
   };
 
+  const userWeight = localStorage.getItem("ado-user-weight") || "";
+  const userHeight = localStorage.getItem("ado-user-height") || "";
+  const userTargetWeight = localStorage.getItem("ado-user-target-weight") || "";
+  const userGoal = localStorage.getItem("ado-user-goal") || "";
+  const userExperience = localStorage.getItem("ado-user-experience") || "";
+  const userDuration = localStorage.getItem("ado-user-workout-duration") || "";
+  const userGender = localStorage.getItem("ado-user-gender") || "";
+  const focusParts: string[] = JSON.parse(localStorage.getItem("ado-user-focus-parts") || "[]");
+
   const stats = [
     { icon: Calendar, label: "Days Active", value: totalActiveDays.toString() },
-    { icon: TrendingUp, label: "Workouts", value: Math.round(totalActiveDays * 0.85).toString() },
-    { icon: Target, label: "Goals Met", value: Math.round(totalActiveDays * 0.27).toString() },
-    { icon: Flame, label: "Streak", value: streak > 0 ? `${streak}🔥` : "0" },
+    { icon: TrendingUp, label: "Level", value: Math.max(1, Math.floor(totalActiveDays / 7)).toString() },
+    { icon: Target, label: "Streak", value: streak > 0 ? `${streak}🔥` : "0" },
+    { icon: Flame, label: "Goal", value: ({ lose: "Burn", gain: "Gain", maintain: "Keep", endurance: "Run", flexibility: "Flex", strength: "Lift" } as Record<string, string>)[userGoal] || "Fit" },
   ];
 
   const hasChartData = weeklyData.some(w => w.days > 0);
