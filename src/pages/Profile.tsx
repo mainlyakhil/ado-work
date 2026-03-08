@@ -86,20 +86,25 @@ const Profile = () => {
       {/* Avatar Picker */}
       {showAvatarPicker && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60" onClick={() => setShowAvatarPicker(false)}>
-          <div onClick={e => e.stopPropagation()} className="w-full max-w-md rounded-t-3xl bg-card p-5 pb-8 animate-fade-in">
+          <div onClick={e => e.stopPropagation()} className="w-full max-w-md rounded-t-3xl bg-card p-5 pb-8 animate-fade-in max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold">Choose Your Avatar</h2>
               <button onClick={() => setShowAvatarPicker(false)} className="p-1"><X className="h-5 w-5 text-muted-foreground" /></button>
             </div>
-            <div className="mt-4 grid grid-cols-4 gap-3">
-              {animalAvatars.map(avatar => (
-                <button key={avatar.id} onClick={() => handleAvatarSelect(avatar.id)}
-                  className={`flex flex-col items-center gap-1 rounded-2xl p-3 transition-all duration-300 ${bouncingId === avatar.id ? "animate-bounce scale-110" : ""} ${selectedAvatar === avatar.id ? "ring-2 ring-primary bg-primary/10 scale-105" : "gym-gradient-card active:scale-90 hover:scale-105"}`}>
-                  <span className="text-2xl">{avatar.emoji}</span>
-                  <span className="text-[8px] font-bold">{avatar.name}</span>
-                </button>
-              ))}
-            </div>
+            {avatarCategories.map(cat => (
+              <div key={cat} className="mt-3">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">{cat}</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {animalAvatars.filter(a => a.category === cat).map(avatar => (
+                    <button key={avatar.id} onClick={() => handleAvatarSelect(avatar.id)}
+                      className={`flex flex-col items-center gap-1 rounded-2xl p-2.5 transition-all duration-300 ${bouncingId === avatar.id ? "animate-bounce scale-110" : ""} ${selectedAvatar === avatar.id ? "ring-2 ring-primary bg-primary/10 scale-105" : "gym-gradient-card active:scale-90 hover:scale-105"}`}>
+                      <span className="text-xl">{avatar.emoji}</span>
+                      <span className="text-[7px] font-bold leading-tight text-center">{avatar.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
