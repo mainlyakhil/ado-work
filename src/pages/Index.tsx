@@ -167,7 +167,7 @@ const Index = () => {
           </button>
           <div>
             <p className="text-sm font-bold">Hey, {userName}! 💪</p>
-            <p className="text-[10px] text-muted-foreground">Today's workout: 45 min</p>
+            <p className="text-[10px] text-muted-foreground">Today's workout: {localStorage.getItem("ado-user-workout-duration") || "45"} min · {(() => { const g = localStorage.getItem("ado-user-goal"); const map: Record<string, string> = { lose: "Burn fat", gain: "Build muscle", maintain: "Stay fit", endurance: "Cardio", flexibility: "Mobility", strength: "Strength" }; return map[g || ""] || "Stay active"; })()}</p>
           </div>
         </div>
 
