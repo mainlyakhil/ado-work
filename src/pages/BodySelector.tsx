@@ -392,29 +392,29 @@ const BodySelector = () => {
 
       {/* Neck */}
       <rect x={pose.neck.x} y={pose.neck.y} width={pose.neck.w} height={pose.neck.h} rx="4"
-        {...partProps("neck")} style={{ ...partProps("neck").style, transition: "all 0.8s ease-in-out" }} />
+        {...partProps("neck")} style={{ ...partProps("neck").style, transition: T }} />
 
-      {/* Traps - always same region on torso top */}
+      {/* Traps */}
       <path d={`M${pose.neck.x - 13} ${pose.neck.y + pose.neck.h + 6} L${pose.neck.x} ${pose.neck.y + 2} L${pose.neck.x + pose.neck.w} ${pose.neck.y + 2} L${pose.neck.x + pose.neck.w + 13} ${pose.neck.y + pose.neck.h + 6} Z`}
-        {...partProps("traps")} style={{ ...partProps("traps").style, transition: "all 0.8s ease-in-out" }} />
+        {...partProps("traps")} style={{ ...partProps("traps").style, transition: T }} />
 
       {/* Shoulders */}
       <ellipse cx={pose.neck.x - 18} cy={pose.neck.y + pose.neck.h + 14} rx="18" ry="12"
-        {...partProps("shoulders")} style={{ ...partProps("shoulders").style, transition: "all 0.8s ease-in-out" }} />
+        {...partProps("shoulders")} style={{ ...partProps("shoulders").style, transition: T }} />
       <ellipse cx={pose.neck.x + pose.neck.w + 18} cy={pose.neck.y + pose.neck.h + 14} rx="18" ry="12"
-        {...partProps("shoulders")} style={{ ...partProps("shoulders").style, transition: "all 0.8s ease-in-out" }} />
+        {...partProps("shoulders")} style={{ ...partProps("shoulders").style, transition: T }} />
 
       {/* Rear Delts */}
       <path d={`M${pose.neck.x - 32} ${pose.neck.y + pose.neck.h + 10} Q${pose.neck.x - 24} ${pose.neck.y + pose.neck.h + 2} ${pose.neck.x - 16} ${pose.neck.y + pose.neck.h + 10}`}
-        fill="none" {...partProps("rear-delts")} style={{ ...partProps("rear-delts").style, transition: "all 0.8s ease-in-out" }} />
+        fill="none" {...partProps("rear-delts")} style={{ ...partProps("rear-delts").style, transition: T }} />
       <path d={`M${pose.neck.x + pose.neck.w + 16} ${pose.neck.y + pose.neck.h + 10} Q${pose.neck.x + pose.neck.w + 24} ${pose.neck.y + pose.neck.h + 2} ${pose.neck.x + pose.neck.w + 32} ${pose.neck.y + pose.neck.h + 10}`}
-        fill="none" {...partProps("rear-delts")} style={{ ...partProps("rear-delts").style, transition: "all 0.8s ease-in-out" }} />
+        fill="none" {...partProps("rear-delts")} style={{ ...partProps("rear-delts").style, transition: T }} />
 
       {/* Chest */}
       <path d="M82 82 L98 82 L96 110 Q88 116 82 108 Z"
-        {...partProps("chest")} style={{ ...partProps("chest").style, transition: "all 0.8s ease-in-out" }} />
+        {...partProps("chest")} style={{ ...partProps("chest").style, transition: T }} />
       <path d="M102 82 L118 82 L118 108 Q112 116 104 110 Z"
-        {...partProps("chest")} style={{ ...partProps("chest").style, transition: "all 0.8s ease-in-out" }} />
+        {...partProps("chest")} style={{ ...partProps("chest").style, transition: T }} />
       <line x1="100" y1="82" x2="100" y2="112" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.5" />
 
       {/* Back hitbox */}
@@ -422,29 +422,27 @@ const BodySelector = () => {
 
       {/* Lats */}
       <path d="M72 92 L80 92 L80 140 L76 150 L70 138 Z"
-        {...partProps("lats")} style={{ ...partProps("lats").style, transition: "all 0.8s ease-in-out" }} />
+        {...partProps("lats")} style={{ ...partProps("lats").style, transition: T }} />
       <path d="M120 92 L128 92 L130 138 L124 150 L120 140 Z"
-        {...partProps("lats")} style={{ ...partProps("lats").style, transition: "all 0.8s ease-in-out" }} />
+        {...partProps("lats")} style={{ ...partProps("lats").style, transition: T }} />
 
       {/* Arms */}
       <path d={pose.leftArm} {...partProps("arms")}
-        style={{ ...partProps("arms").style, transition: "all 0.8s ease-in-out" }} />
+        style={{ ...partProps("arms").style, transition: T }} />
       <path d={pose.rightArm} {...partProps("arms")}
-        style={{ ...partProps("arms").style, transition: "all 0.8s ease-in-out" }} />
+        style={{ ...partProps("arms").style, transition: T }} />
 
       {/* Forearms */}
       <path d={pose.leftForearm} {...partProps("forearms")}
-        style={{ ...partProps("forearms").style, transition: "all 0.8s ease-in-out" }} />
+        style={{ ...partProps("forearms").style, transition: T }} />
       <path d={pose.rightForearm} {...partProps("forearms")}
-        style={{ ...partProps("forearms").style, transition: "all 0.8s ease-in-out" }} />
+        style={{ ...partProps("forearms").style, transition: T }} />
 
       {/* Hands */}
       <ellipse cx={pose.leftHand.cx} cy={pose.leftHand.cy} rx="6" ry="7"
-        fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6"
-        style={{ transition: "all 0.8s ease-in-out" }} />
+        fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6" style={{ transition: T }} />
       <ellipse cx={pose.rightHand.cx} cy={pose.rightHand.cy} rx="6" ry="7"
-        fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6"
-        style={{ transition: "all 0.8s ease-in-out" }} />
+        fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6" style={{ transition: T }} />
 
       {/* Core */}
       <rect x="86" y="116" width="28" height="40" rx="4" {...partProps("core")} />
@@ -470,9 +468,9 @@ const BodySelector = () => {
 
       {/* Quads */}
       <path d={pose.leftLeg} {...partProps("legs")}
-        style={{ ...partProps("legs").style, transition: "all 0.8s ease-in-out" }} />
+        style={{ ...partProps("legs").style, transition: T }} />
       <path d={pose.rightLeg} {...partProps("legs")}
-        style={{ ...partProps("legs").style, transition: "all 0.8s ease-in-out" }} />
+        style={{ ...partProps("legs").style, transition: T }} />
 
       {/* Hamstrings */}
       <path d="M74 200 L72 198 L70 236 L74 248 L78 236 Z" {...partProps("hamstrings")} />
@@ -480,17 +478,15 @@ const BodySelector = () => {
 
       {/* Calves */}
       <path d={pose.leftCalf} {...partProps("calves")}
-        style={{ ...partProps("calves").style, transition: "all 0.8s ease-in-out" }} />
+        style={{ ...partProps("calves").style, transition: T }} />
       <path d={pose.rightCalf} {...partProps("calves")}
-        style={{ ...partProps("calves").style, transition: "all 0.8s ease-in-out" }} />
+        style={{ ...partProps("calves").style, transition: T }} />
 
       {/* Feet */}
       <ellipse cx={pose.leftFoot.cx} cy={pose.leftFoot.cy} rx="11" ry="5"
-        fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6"
-        style={{ transition: "all 0.8s ease-in-out" }} />
+        fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6" style={{ transition: T }} />
       <ellipse cx={pose.rightFoot.cx} cy={pose.rightFoot.cy} rx="11" ry="5"
-        fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6"
-        style={{ transition: "all 0.8s ease-in-out" }} />
+        fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6" style={{ transition: T }} />
 
       {/* Label with connector line */}
       {activeLabel && (
