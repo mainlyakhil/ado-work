@@ -199,6 +199,9 @@ const Index = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Diet Plan Card */}
         <button onClick={() => navigate("/diet-plan")} className="w-full relative overflow-hidden gym-gradient-card rounded-2xl p-4 transition-transform active:scale-[0.98]">
           <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/10" />
           <div className="absolute -right-2 bottom--2 h-16 w-16 rounded-full bg-primary/5" />
