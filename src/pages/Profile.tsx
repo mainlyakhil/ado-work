@@ -5,20 +5,7 @@ import MobileLayout from "@/components/MobileLayout";
 import ProgressRing from "@/components/ProgressRing";
 import { useToast } from "@/hooks/use-toast";
 
-const animalAvatars = [
-  { id: "wolf", emoji: "🐺", name: "Alpha Wolf" },
-  { id: "lion", emoji: "🦁", name: "King Lion" },
-  { id: "bear", emoji: "🐻", name: "Grizzly Bear" },
-  { id: "gorilla", emoji: "🦍", name: "Silverback" },
-  { id: "eagle", emoji: "🦅", name: "War Eagle" },
-  { id: "bull", emoji: "🐂", name: "Raging Bull" },
-  { id: "shark", emoji: "🦈", name: "Great White" },
-  { id: "dragon", emoji: "🐉", name: "Fire Dragon" },
-  { id: "panther", emoji: "🐆", name: "Black Panther" },
-  { id: "rhino", emoji: "🦏", name: "Iron Rhino" },
-  { id: "tiger", emoji: "🐅", name: "Bengal Tiger" },
-  { id: "hawk", emoji: "🦅", name: "Night Hawk" },
-];
+import { animalAvatars, avatarCategories } from "@/data/avatars";
 
 const stats = [
   { icon: Calendar, label: "Days Active", value: "45" },
