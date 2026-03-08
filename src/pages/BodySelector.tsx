@@ -252,11 +252,7 @@ const BodySelector = () => {
     setTimeout(() => {
       setBouncingId(null);
       if (id === "none") { setStep("noequip"); } else {
-        const routeMap: Record<string, string> = {
-          "lats": "back", "obliques": "core", "hip-flexors": "legs",
-          "hamstrings": "legs", "rear-delts": "shoulders", "lower-back": "back",
-        };
-        navigate(`/body/${routeMap[selectedPart || ""] || selectedPart}`);
+        navigate(`/body/${selectedPart}`);
       }
     }, 300);
   };
