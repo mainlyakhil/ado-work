@@ -166,6 +166,28 @@ const Settings = () => {
             </div>
           </div>
         )}
+
+        {/* Clear App Data */}
+        <button onClick={() => setShowClearConfirm(true)} className="mt-3 flex w-full items-center gap-3 rounded-2xl gym-gradient-card p-4 transition-transform active:scale-[0.98]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/20"><Trash2 className="h-5 w-5 text-destructive" /></div>
+          <div className="flex-1 text-left">
+            <p className="text-sm font-bold text-destructive">Clear App Data</p>
+            <p className="text-[10px] text-muted-foreground">Delete all saved data & reset app</p>
+          </div>
+        </button>
+
+        {showClearConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in" onClick={() => setShowClearConfirm(false)}>
+            <div className="mx-6 w-full max-w-sm rounded-2xl bg-card p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <p className="text-sm font-bold">Are you sure?</p>
+              <p className="mt-1 text-xs text-muted-foreground">This will permanently delete all your progress, settings, and saved data. This action cannot be undone.</p>
+              <div className="mt-4 flex gap-2">
+                <button onClick={() => setShowClearConfirm(false)} className="flex-1 rounded-xl bg-secondary py-2.5 text-xs font-bold text-secondary-foreground active:scale-95 transition-transform">Cancel</button>
+                <button onClick={handleClearAppData} className="flex-1 rounded-xl bg-destructive py-2.5 text-xs font-bold text-destructive-foreground active:scale-95 transition-transform">Clear All Data</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </MobileLayout>
   );
