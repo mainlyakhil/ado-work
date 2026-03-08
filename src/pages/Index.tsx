@@ -77,6 +77,17 @@ const Index = () => {
     return saved ? JSON.parse(saved) : defaultWorkoutHistory;
   });
 
+  // Mark today as active for tracking
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const saved = localStorage.getItem("ado-active-days");
+    const days: string[] = saved ? JSON.parse(saved) : [];
+    if (!days.includes(today)) {
+      days.push(today);
+      localStorage.setItem("ado-active-days", JSON.stringify(days));
+    }
+  }, []);
+
   useEffect(() => { localStorage.setItem("ado-reminders", JSON.stringify(reminders)); }, [reminders]);
 
   useEffect(() => {
