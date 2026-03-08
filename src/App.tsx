@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Plans from "./pages/Plans";
 import Workouts from "./pages/Workouts";
 import Community from "./pages/Community";
+import DietPlan from "./pages/DietPlan";
 import BodyPartWorkout from "./pages/BodyPartWorkout";
 import BodySelector from "./pages/BodySelector";
 import Settings from "./pages/Settings";
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/workouts" element={<Workouts />} />
             <Route path="/community" element={<Community />} />
             <Route path="/body/:part" element={<BodyPartWorkout />} />
+            <Route path="/diet-plan" element={<DietPlan />} />
             <Route path="/body-selector" element={<BodySelector />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/growth" element={<GrowthStatus />} />

@@ -1,4 +1,4 @@
-import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2, TrendingUp, Settings, UserCircle, Clock, CheckCircle } from "lucide-react";
+import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2, TrendingUp, Settings, UserCircle, Clock, CheckCircle, Apple } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MobileLayout from "@/components/MobileLayout";
@@ -32,20 +32,7 @@ const bodyParts = [
   { id: "rear-delts", emoji: "🎯", label: "Rear Delts" },
 ];
 
-const animalAvatars = [
-  { id: "wolf", emoji: "🐺", name: "Alpha Wolf" },
-  { id: "lion", emoji: "🦁", name: "King Lion" },
-  { id: "bear", emoji: "🐻", name: "Grizzly Bear" },
-  { id: "gorilla", emoji: "🦍", name: "Silverback" },
-  { id: "eagle", emoji: "🦅", name: "War Eagle" },
-  { id: "bull", emoji: "🐂", name: "Raging Bull" },
-  { id: "shark", emoji: "🦈", name: "Great White" },
-  { id: "dragon", emoji: "🐉", name: "Fire Dragon" },
-  { id: "panther", emoji: "🐆", name: "Black Panther" },
-  { id: "rhino", emoji: "🦏", name: "Iron Rhino" },
-  { id: "tiger", emoji: "🐅", name: "Bengal Tiger" },
-  { id: "hawk", emoji: "🦅", name: "Night Hawk" },
-];
+import { animalAvatars, avatarCategories } from "@/data/avatars";
 
 interface WorkoutHistoryEntry {
   id: string;
@@ -178,6 +165,27 @@ const Index = () => {
             <UtensilsCrossed className="h-4 w-4" /> Track Diet
           </button>
         </div>
+
+        {/* Diet Plan Card */}
+        <button onClick={() => navigate("/diet-plan")} className="w-full relative overflow-hidden gym-gradient-card rounded-2xl p-4 transition-transform active:scale-[0.98]">
+          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/10" />
+          <div className="absolute -right-2 bottom--2 h-16 w-16 rounded-full bg-primary/5" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15">
+              <Apple className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-bold">Diet Plan</p>
+              <p className="text-[10px] text-muted-foreground">Personalized meal plans with macro tracking</p>
+              <div className="mt-1.5 flex items-center gap-1.5">
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">6 diet types</span>
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">4 goals</span>
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">Full macros</span>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </div>
+        </button>
 
         {/* Select My Work */}
         <div>
@@ -354,24 +362,29 @@ const Index = () => {
       {/* Avatar Picker Modal */}
       {showAvatarPicker && (
         <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60" onClick={() => setShowAvatarPicker(false)}>
-          <div onClick={e => e.stopPropagation()} className="w-full max-w-md rounded-t-3xl bg-card p-5 pb-8 animate-fade-in">
+          <div onClick={e => e.stopPropagation()} className="w-full max-w-md rounded-t-3xl bg-card p-5 pb-8 animate-fade-in max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold">Choose Your Avatar</h2>
               <button onClick={() => setShowAvatarPicker(false)} className="p-1"><X className="h-5 w-5 text-muted-foreground" /></button>
             </div>
             <p className="mt-1 text-[10px] text-muted-foreground">Pick your spirit animal 🔥</p>
-            <div className="mt-4 grid grid-cols-4 gap-3">
-              {animalAvatars.map(avatar => (
-                <button key={avatar.id} onClick={() => handleAvatarSelect(avatar.id)}
-                  className={`flex flex-col items-center gap-1 rounded-2xl p-3 transition-all duration-300 ${
-                    bouncingId === avatar.id ? "animate-bounce scale-110" : ""
-                  } ${selectedAvatar === avatar.id ? "ring-2 ring-primary bg-primary/10 scale-105" : "gym-gradient-card active:scale-90 hover:scale-105"}`}
-                >
-                  <span className="text-2xl">{avatar.emoji}</span>
-                  <span className="text-[8px] font-bold">{avatar.name}</span>
-                </button>
-              ))}
-            </div>
+            {avatarCategories.map(cat => (
+              <div key={cat} className="mt-3">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">{cat}</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {animalAvatars.filter(a => a.category === cat).map(avatar => (
+                    <button key={avatar.id} onClick={() => handleAvatarSelect(avatar.id)}
+                      className={`flex flex-col items-center gap-1 rounded-2xl p-2.5 transition-all duration-300 ${
+                        bouncingId === avatar.id ? "animate-bounce scale-110" : ""
+                      } ${selectedAvatar === avatar.id ? "ring-2 ring-primary bg-primary/10 scale-105" : "gym-gradient-card active:scale-90 hover:scale-105"}`}
+                    >
+                      <span className="text-xl">{avatar.emoji}</span>
+                      <span className="text-[7px] font-bold leading-tight text-center">{avatar.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
