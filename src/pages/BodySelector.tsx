@@ -243,7 +243,7 @@ const BodySelector = () => {
         {step === "body" && (
           <div className="mt-4 animate-fade-in">
             <p className="text-center text-xs text-muted-foreground mb-2">Tap a muscle group to target</p>
-            <div className="relative mx-auto pose-flex" style={{ width: 260, height: 460 }}>
+            <div className="relative mx-auto pose-flex" style={{ maxWidth: 280, height: 480 }}>
               <BodyModel />
             </div>
 
