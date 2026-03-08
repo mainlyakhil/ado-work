@@ -2,6 +2,7 @@ import { ChevronLeft, Dumbbell, ChevronRight, Zap } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
+import bodyModelImg from "@/assets/body-model.png";
 
 const bodyParts = [
   { id: "chest", label: "Chest" }, { id: "shoulders", label: "Shoulders" },
