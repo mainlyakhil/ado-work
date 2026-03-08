@@ -10,6 +10,14 @@ const Settings = () => {
   const { currentTheme, setTheme } = useTheme();
   const { toast } = useToast();
   const [section, setSection] = useState<"themes" | "login" | "support" | null>("themes");
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  const handleClearAppData = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    toast({ title: "Data Cleared", description: "All app data has been removed. Reloading..." });
+    setTimeout(() => window.location.replace("/"), 1000);
+  };
 
   const handleGoogleLogin = () => {
     toast({ title: "Google Login", description: "Connect your Google account to sync progress across devices." });
