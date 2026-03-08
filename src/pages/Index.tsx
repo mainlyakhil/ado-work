@@ -1,11 +1,93 @@
-import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target } from "lucide-react";
+import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import MobileLayout from "@/components/MobileLayout";
 import ProgressRing from "@/components/ProgressRing";
 import offersBanner from "@/assets/offers-banner.png";
+import { useToast } from "@/hooks/use-toast";
+
+interface Reminder {
+  id: string;
+  label: string;
+  time: string;
+  enabled: boolean;
+}
+
+const bodyParts = [
+  { id: "chest", emoji: "🫁", label: "Chest" },
+  { id: "back", emoji: "🔙", label: "Back" },
+  { id: "shoulders", emoji: "🤷", label: "Shoulders" },
+  { id: "arms", emoji: "💪", label: "Arms" },
+  { id: "legs", emoji: "🦵", label: "Legs" },
+  { id: "core", emoji: "🔥", label: "Core" },
+];
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [showReminders, setShowReminders] = useState(false);
+  const [reminders, setReminders] = useState<Reminder[]>(() => {
+    const saved = localStorage.getItem("fittrack-reminders");
+    return saved
+      ? JSON.parse(saved)
+      : [
+          { id: "1", label: "Morning Workout", time: "07:00", enabled: true },
+          { id: "2", label: "Protein Shake", time: "08:00", enabled: false },
+        ];
+  });
+  const [newLabel, setNewLabel] = useState("");
+  const [newTime, setNewTime] = useState("09:00");
+
+  useEffect(() => {
+    localStorage.setItem("fittrack-reminders", JSON.stringify(reminders));
+  }, [reminders]);
+
+  // Schedule browser notifications for enabled reminders
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
+    const intervals: ReturnType<typeof setInterval>[] = [];
+
+    reminders
+      .filter((r) => r.enabled)
+      .forEach((r) => {
+        const checkInterval = setInterval(() => {
+          const now = new Date();
+          const [h, m] = r.time.split(":").map(Number);
+          if (now.getHours() === h && now.getMinutes() === m && now.getSeconds() === 0) {
+            if ("Notification" in window && Notification.permission === "granted") {
+              new Notification("FitTrack Reminder", { body: r.label });
+            }
+          }
+        }, 1000);
+        intervals.push(checkInterval);
+      });
+
+    return () => intervals.forEach(clearInterval);
+  }, [reminders]);
+
+  const addReminder = () => {
+    if (!newLabel.trim()) return;
+    setReminders((prev) => [
+      ...prev,
+      { id: Date.now().toString(), label: newLabel, time: newTime, enabled: true },
+    ]);
+    setNewLabel("");
+    setNewTime("09:00");
+    toast({ title: "Reminder set!", description: `${newLabel} at ${newTime}` });
+  };
+
+  const deleteReminder = (id: string) => {
+    setReminders((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const toggleReminder = (id: string) => {
+    setReminders((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, enabled: !r.enabled } : r))
+    );
+  };
 
   return (
     <MobileLayout>
@@ -19,7 +101,17 @@ const Index = () => {
             </div>
           </button>
           <h1 className="text-lg font-bold">FitTrack</h1>
-          <div className="w-9" />
+          <button
+            onClick={() => setShowReminders(true)}
+            className="relative rounded-full border border-border p-2"
+          >
+            <Bell className="h-4 w-4" />
+            {reminders.filter((r) => r.enabled).length > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground">
+                {reminders.filter((r) => r.enabled).length}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Action Buttons */}
@@ -38,6 +130,23 @@ const Index = () => {
             <UtensilsCrossed className="h-4 w-4" />
             Track Diet
           </button>
+        </div>
+
+        {/* Body Part Selector */}
+        <div>
+          <h2 className="mb-3 text-sm font-bold">Target Body Part</h2>
+          <div className="grid grid-cols-3 gap-2">
+            {bodyParts.map((part) => (
+              <button
+                key={part.id}
+                onClick={() => navigate(`/body/${part.id}`)}
+                className="gym-gradient-card flex flex-col items-center gap-1.5 rounded-2xl p-3 transition-transform active:scale-95"
+              >
+                <span className="text-2xl">{part.emoji}</span>
+                <span className="text-[10px] font-semibold">{part.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Offers Card */}
@@ -147,6 +256,76 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Reminders Modal */}
+      {showReminders && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60" onClick={() => setShowReminders(false)}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md rounded-t-3xl bg-card p-5 pb-8 animate-in slide-in-from-bottom"
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold">Reminders</h2>
+              <button onClick={() => setShowReminders(false)} className="p-1">
+                <X className="h-5 w-5 text-muted-foreground" />
+              </button>
+            </div>
+
+            {/* Add new reminder */}
+            <div className="mt-4 flex gap-2">
+              <input
+                type="text"
+                placeholder="Reminder label..."
+                value={newLabel}
+                onChange={(e) => setNewLabel(e.target.value)}
+                className="flex-1 rounded-xl bg-secondary px-3 py-2.5 text-xs text-foreground placeholder:text-muted-foreground outline-none"
+              />
+              <input
+                type="time"
+                value={newTime}
+                onChange={(e) => setNewTime(e.target.value)}
+                className="w-24 rounded-xl bg-secondary px-2 py-2.5 text-xs text-foreground outline-none"
+              />
+              <button
+                onClick={addReminder}
+                className="flex items-center justify-center rounded-xl bg-primary px-3 text-primary-foreground active:scale-95 transition-transform"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Reminder List */}
+            <div className="mt-4 space-y-2 max-h-60 overflow-y-auto">
+              {reminders.length === 0 && (
+                <p className="text-center text-xs text-muted-foreground py-6">No reminders set</p>
+              )}
+              {reminders.map((r) => (
+                <div key={r.id} className="flex items-center gap-3 rounded-xl bg-secondary p-3">
+                  <button
+                    onClick={() => toggleReminder(r.id)}
+                    className={`h-5 w-5 shrink-0 rounded-full border-2 transition-colors ${
+                      r.enabled ? "border-primary bg-primary" : "border-muted-foreground"
+                    }`}
+                  >
+                    {r.enabled && (
+                      <svg className="h-full w-full text-primary-foreground" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+                  <div className="flex-1">
+                    <p className="text-xs font-semibold">{r.label}</p>
+                    <p className="text-[10px] text-muted-foreground">{r.time}</p>
+                  </div>
+                  <button onClick={() => deleteReminder(r.id)} className="p-1">
+                    <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </MobileLayout>
   );
 };
