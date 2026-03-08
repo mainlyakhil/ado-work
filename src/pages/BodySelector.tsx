@@ -131,7 +131,7 @@ const poses: Pose[] = [
   {
     name: "Most Muscular",
     head: { cx: 100, cy: 30, tilt: -3 },
-    face: { leftEye: { x: 95, y: 26 }, rightEye: { x: 105, y: 26 }, mouth: "M95 36 Q100 34 105 36", brow: "M91 22 L98 21 M102 21 L109 22" },
+    face: { leftEye: { x: 95, y: 26 }, rightEye: { x: 105, y: 26 }, mouth: "M95 35 Q100 38 105 35", brow: "M91 22 L98 20.5 M102 20.5 L109 22" },
     neck: { x: 91, y: 48, w: 18, h: 12 },
     torso: "M76 66 L124 66 L128 172 L72 172 Z",
     leftArm: "M40 82 Q30 90 26 100 Q24 108 28 116 L38 114 Q36 106 38 98 Q42 90 50 84 Z",
