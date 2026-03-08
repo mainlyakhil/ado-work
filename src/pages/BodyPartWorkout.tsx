@@ -259,6 +259,29 @@ const bodyPartData: Record<string, { title: string; emoji: string; exercises: Ex
   },
 };
 
+// Beep sound using Web Audio API
+const playBeep = (frequency = 880, duration = 200, count = 3) => {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    let time = ctx.currentTime;
+    for (let i = 0; i < count; i++) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = frequency;
+      osc.type = "sine";
+      gain.gain.setValueAtTime(0.3, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + duration / 1000);
+      osc.start(time);
+      osc.stop(time + duration / 1000);
+      time += (duration + 100) / 1000;
+    }
+  } catch (e) { /* audio not available */ }
+};
+
+const REST_PRESETS = [30, 45, 60, 90, 120];
+
 const BodyPartWorkout = () => {
   const navigate = useNavigate();
   const { part } = useParams<{ part: string }>();
@@ -267,6 +290,16 @@ const BodyPartWorkout = () => {
   const [isActive, setIsActive] = useState(false);
   const [timer, setTimer] = useState(0);
   const [interval, setIntervalId] = useState<ReturnType<typeof setInterval> | null>(null);
+  const [restDuration, setRestDuration] = useState(60);
+  const [restRemaining, setRestRemaining] = useState(0);
+  const [isResting, setIsResting] = useState(false);
+  const restIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (restIntervalRef.current) clearInterval(restIntervalRef.current);
+    };
+  }, []);
 
   if (!data) {
     return (
@@ -294,6 +327,35 @@ const BodyPartWorkout = () => {
   const stopWorkout = () => {
     setIsActive(false);
     if (interval) clearInterval(interval);
+    stopRest();
+  };
+
+  const startRest = () => {
+    setIsResting(true);
+    setRestRemaining(restDuration);
+    if (restIntervalRef.current) clearInterval(restIntervalRef.current);
+    restIntervalRef.current = setInterval(() => {
+      setRestRemaining(prev => {
+        if (prev <= 1) {
+          clearInterval(restIntervalRef.current!);
+          restIntervalRef.current = null;
+          setIsResting(false);
+          playBeep(880, 200, 3);
+          return 0;
+        }
+        if (prev === 4) playBeep(660, 100, 1);
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const stopRest = () => {
+    setIsResting(false);
+    setRestRemaining(0);
+    if (restIntervalRef.current) {
+      clearInterval(restIntervalRef.current);
+      restIntervalRef.current = null;
+    }
   };
 
   const formatTime = (s: number) => {
@@ -301,6 +363,8 @@ const BodyPartWorkout = () => {
     const sec = s % 60;
     return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   };
+
+  const restProgress = restDuration > 0 ? ((restDuration - restRemaining) / restDuration) * 100 : 0;
 
   return (
     <MobileLayout>
@@ -332,9 +396,72 @@ const BodyPartWorkout = () => {
           </div>
         </div>
 
+        {/* Rest Timer Card */}
+        <div className={`mt-3 rounded-2xl p-4 transition-all duration-500 ${isResting ? "gym-gradient-orange" : "gym-gradient-card"}`}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Timer className={`h-4 w-4 ${isResting ? "text-primary-foreground" : "text-primary"}`} />
+              <span className={`text-xs font-bold ${isResting ? "text-primary-foreground" : ""}`}>Rest Timer</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Volume2 className={`h-3 w-3 ${isResting ? "text-primary-foreground/60" : "text-muted-foreground"}`} />
+              <span className={`text-[9px] ${isResting ? "text-primary-foreground/60" : "text-muted-foreground"}`}>Sound on</span>
+            </div>
+          </div>
+
+          {isResting ? (
+            <div className="text-center">
+              <div className="relative mx-auto w-24 h-24 mb-3">
+                <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="hsl(var(--primary-foreground) / 0.2)" strokeWidth="6" />
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="hsl(var(--primary-foreground))" strokeWidth="6"
+                    strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 42}`}
+                    strokeDashoffset={`${2 * Math.PI * 42 * (1 - restProgress / 100)}`}
+                    style={{ transition: "stroke-dashoffset 1s linear" }} />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-2xl font-black text-primary-foreground">{restRemaining}s</span>
+                </div>
+              </div>
+              <button onClick={stopRest}
+                className="flex mx-auto items-center gap-2 rounded-xl bg-primary-foreground/20 px-6 py-2 text-xs font-bold text-primary-foreground active:scale-95 transition-transform">
+                <Square className="h-3 w-3" /> Skip Rest
+              </button>
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <button onClick={() => setRestDuration(d => Math.max(10, d - 15))}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary active:scale-90 transition-transform">
+                  <Minus className="h-3.5 w-3.5" />
+                </button>
+                <span className="text-2xl font-black w-16 text-center">{restDuration}s</span>
+                <button onClick={() => setRestDuration(d => Math.min(300, d + 15))}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary active:scale-90 transition-transform">
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <div className="flex gap-1.5 justify-center mb-3">
+                {REST_PRESETS.map(p => (
+                  <button key={p} onClick={() => setRestDuration(p)}
+                    className={`rounded-lg px-2.5 py-1 text-[10px] font-bold transition-all ${
+                      restDuration === p ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
+                    }`}>
+                    {p}s
+                  </button>
+                ))}
+              </div>
+              <button onClick={startRest}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary/15 py-2.5 text-xs font-bold text-primary active:scale-95 transition-transform">
+                <Timer className="h-3.5 w-3.5" /> Start Rest
+              </button>
+            </div>
+          )}
+        </div>
+
         <button
           onClick={isActive ? stopWorkout : startWorkout}
-          className={`mt-4 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-transform active:scale-95 ${
+          className={`mt-3 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-transform active:scale-95 ${
             isActive ? "bg-destructive text-destructive-foreground" : "gym-gradient-orange text-primary-foreground"
           }`}
         >
