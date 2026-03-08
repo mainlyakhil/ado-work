@@ -747,7 +747,7 @@ const DietPlan = () => {
   const [goal, setGoal] = useState<Goal>("maintain");
   const [dietType, setDietType] = useState<DietType>("balanced");
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
-  const [weight, setWeight] = useState(() => parseInt(localStorage.getItem("ado-weight") || "70"));
+  const [weight, setWeight] = useState(() => parseInt(localStorage.getItem("ado-user-weight") || localStorage.getItem("ado-weight") || "70"));
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showDietPicker, setShowDietPicker] = useState(false);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
