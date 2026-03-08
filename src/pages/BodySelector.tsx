@@ -347,12 +347,10 @@ const BodySelector = () => {
   const activeLabel = labelData.find(l => l.id === (hoveredPart || selectedPart || animatingPart));
   const pose = poses[poseIndex];
 
+  const T = "all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+
   const BodyModel = () => (
-    <svg viewBox="0 0 200 320" className="w-full h-full" style={{
-      opacity: isTransitioning ? 0.6 : 1,
-      transform: isTransitioning ? "scale(0.98)" : "scale(1)",
-      transition: "all 0.4s ease-in-out",
-    }}>
+    <svg viewBox="0 0 200 320" className="w-full h-full">
       <defs>
         <radialGradient id="bodyAura" cx="50%" cy="40%" r="55%">
           <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.06" />
@@ -362,16 +360,35 @@ const BodySelector = () => {
 
       <ellipse cx="100" cy="160" rx="90" ry="155" fill="url(#bodyAura)" />
 
-      {/* Head */}
-      <ellipse cx={pose.head.cx} cy={pose.head.cy} rx="14" ry="18"
-        fill="none" stroke="hsl(var(--primary) / 0.25)" strokeWidth="1.2"
-        style={{ transition: "all 0.8s ease-in-out" }}
-      />
-      {/* Face */}
-      <line x1={pose.head.cx - 5} y1={pose.head.cy - 4} x2={pose.head.cx - 5} y2={pose.head.cy - 2}
-        stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.8" style={{ transition: "all 0.8s ease-in-out" }} />
-      <line x1={pose.head.cx + 5} y1={pose.head.cy - 4} x2={pose.head.cx + 5} y2={pose.head.cy - 2}
-        stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.8" style={{ transition: "all 0.8s ease-in-out" }} />
+      {/* Head with tilt */}
+      <g style={{ transition: T, transform: `rotate(${pose.head.tilt || 0}deg)`, transformOrigin: `${pose.head.cx}px ${pose.head.cy + 18}px` }}>
+        <ellipse cx={pose.head.cx} cy={pose.head.cy} rx="14" ry="18"
+          fill="none" stroke="hsl(var(--primary) / 0.25)" strokeWidth="1.2"
+          style={{ transition: T }} />
+        {/* Eyes — small filled circles */}
+        <circle cx={pose.face.leftEye.x} cy={pose.face.leftEye.y} r="1.2"
+          fill="hsl(var(--primary) / 0.5)" style={{ transition: T }}>
+          <animate attributeName="r" values="1.2;0.4;1.2" dur="3.5s" repeatCount="indefinite" />
+        </circle>
+        <circle cx={pose.face.rightEye.x} cy={pose.face.rightEye.y} r="1.2"
+          fill="hsl(var(--primary) / 0.5)" style={{ transition: T }}>
+          <animate attributeName="r" values="1.2;0.4;1.2" dur="3.5s" repeatCount="indefinite" />
+        </circle>
+        {/* Eyebrows */}
+        {pose.face.brow && (
+          <path d={pose.face.brow} fill="none" stroke="hsl(var(--primary) / 0.3)" strokeWidth="0.8" strokeLinecap="round"
+            style={{ transition: T }} />
+        )}
+        {/* Mouth */}
+        <path d={pose.face.mouth} fill="none" stroke="hsl(var(--primary) / 0.25)" strokeWidth="0.7" strokeLinecap="round"
+          style={{ transition: T }} />
+        {/* Nose hint */}
+        <line x1={pose.head.cx} y1={pose.head.cy - 1} x2={pose.head.cx} y2={pose.head.cy + 3}
+          stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.5" style={{ transition: T }} />
+        {/* Jaw line */}
+        <path d={`M${pose.head.cx - 10} ${pose.head.cy + 6} Q${pose.head.cx} ${pose.head.cy + 16} ${pose.head.cx + 10} ${pose.head.cy + 6}`}
+          fill="none" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.5" style={{ transition: T }} />
+      </g>
 
       {/* Neck */}
       <rect x={pose.neck.x} y={pose.neck.y} width={pose.neck.w} height={pose.neck.h} rx="4"
