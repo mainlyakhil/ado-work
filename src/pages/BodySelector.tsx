@@ -80,7 +80,7 @@ const poses: Pose[] = [
   {
     name: "Relaxed",
     head: { cx: 100, cy: 28 },
-    face: { leftEye: { x: 95, y: 24 }, rightEye: { x: 105, y: 24 }, mouth: "M96 34 Q100 36 104 34", brow: "M92 21 L98 20 M102 20 L108 21" },
+    face: { leftEye: { x: 95, y: 24 }, rightEye: { x: 105, y: 24 }, mouth: "M96 33 Q100 36 104 33", brow: "M92 21 L98 20.5 M102 20.5 L108 21" },
     neck: { x: 91, y: 46, w: 18, h: 14 },
     torso: "M80 66 L120 66 L124 170 L76 170 Z",
     leftArm: "M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z",
@@ -97,7 +97,7 @@ const poses: Pose[] = [
   {
     name: "Double Bicep",
     head: { cx: 100, cy: 26, tilt: -2 },
-    face: { leftEye: { x: 95, y: 22 }, rightEye: { x: 105, y: 22 }, mouth: "M95 32 Q100 30 105 32", brow: "M91 18 L98 17 M102 17 L109 18" },
+    face: { leftEye: { x: 95, y: 22 }, rightEye: { x: 105, y: 22 }, mouth: "M95 31 Q100 34 105 31", brow: "M91 18 L98 16.5 M102 16.5 L109 18" },
     neck: { x: 91, y: 44, w: 18, h: 14 },
     torso: "M78 64 L122 64 L126 170 L74 170 Z",
     leftArm: "M40 80 Q28 74 22 60 Q18 50 20 44 L30 42 Q34 52 36 60 Q40 70 48 78 Z",
@@ -131,7 +131,7 @@ const poses: Pose[] = [
   {
     name: "Most Muscular",
     head: { cx: 100, cy: 30, tilt: -3 },
-    face: { leftEye: { x: 95, y: 26 }, rightEye: { x: 105, y: 26 }, mouth: "M95 36 Q100 34 105 36", brow: "M91 22 L98 21 M102 21 L109 22" },
+    face: { leftEye: { x: 95, y: 26 }, rightEye: { x: 105, y: 26 }, mouth: "M95 35 Q100 38 105 35", brow: "M91 22 L98 20.5 M102 20.5 L109 22" },
     neck: { x: 91, y: 48, w: 18, h: 12 },
     torso: "M76 66 L124 66 L128 172 L72 172 Z",
     leftArm: "M40 82 Q30 90 26 100 Q24 108 28 116 L38 114 Q36 106 38 98 Q42 90 50 84 Z",
@@ -182,7 +182,7 @@ const poses: Pose[] = [
   {
     name: "Abs & Thigh",
     head: { cx: 100, cy: 28, tilt: -4 },
-    face: { leftEye: { x: 95, y: 24 }, rightEye: { x: 105, y: 24 }, mouth: "M95 34 Q100 32 105 34", brow: "M91 20 L97 18.5 M103 18.5 L109 20" },
+    face: { leftEye: { x: 95, y: 24 }, rightEye: { x: 105, y: 24 }, mouth: "M95 33 Q100 36 105 33", brow: "M91 20 L97 18 M103 18 L109 20" },
     neck: { x: 91, y: 46, w: 18, h: 14 },
     torso: "M78 66 L122 66 L126 170 L74 170 Z",
     leftArm: "M42 84 Q28 78 20 66 Q16 56 20 48 L30 50 Q28 58 32 66 Q38 76 48 82 Z",
