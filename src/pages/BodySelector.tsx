@@ -97,7 +97,7 @@ const poses: Pose[] = [
   {
     name: "Double Bicep",
     head: { cx: 100, cy: 26, tilt: -2 },
-    face: { leftEye: { x: 95, y: 22 }, rightEye: { x: 105, y: 22 }, mouth: "M95 32 Q100 30 105 32", brow: "M91 18 L98 17 M102 17 L109 18" },
+    face: { leftEye: { x: 95, y: 22 }, rightEye: { x: 105, y: 22 }, mouth: "M95 31 Q100 34 105 31", brow: "M91 18 L98 16.5 M102 16.5 L109 18" },
     neck: { x: 91, y: 44, w: 18, h: 14 },
     torso: "M78 64 L122 64 L126 170 L74 170 Z",
     leftArm: "M40 80 Q28 74 22 60 Q18 50 20 44 L30 42 Q34 52 36 60 Q40 70 48 78 Z",
