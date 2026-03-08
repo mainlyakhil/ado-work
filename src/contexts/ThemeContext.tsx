@@ -200,7 +200,7 @@ export const useTheme = () => useContext(ThemeContext);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [currentTheme, setCurrentTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem("ado-work-theme");
-    return themes.find((t) => t.id === saved) || themes[0];
+    return themes.find((t) => t.id === saved) || themes.find((t) => t.id === "monochrome") || themes[0];
   });
 
   const applyTheme = (theme: Theme) => {
