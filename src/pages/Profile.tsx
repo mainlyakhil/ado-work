@@ -144,11 +144,20 @@ const Profile = () => {
     }));
   };
 
+  const userWeight = localStorage.getItem("ado-user-weight") || "";
+  const userHeight = localStorage.getItem("ado-user-height") || "";
+  const userTargetWeight = localStorage.getItem("ado-user-target-weight") || "";
+  const userGoal = localStorage.getItem("ado-user-goal") || "";
+  const userExperience = localStorage.getItem("ado-user-experience") || "";
+  const userDuration = localStorage.getItem("ado-user-workout-duration") || "";
+  const userGender = localStorage.getItem("ado-user-gender") || "";
+  const focusParts: string[] = JSON.parse(localStorage.getItem("ado-user-focus-parts") || "[]");
+
   const stats = [
     { icon: Calendar, label: "Days Active", value: totalActiveDays.toString() },
-    { icon: TrendingUp, label: "Workouts", value: Math.round(totalActiveDays * 0.85).toString() },
-    { icon: Target, label: "Goals Met", value: Math.round(totalActiveDays * 0.27).toString() },
-    { icon: Flame, label: "Streak", value: streak > 0 ? `${streak}🔥` : "0" },
+    { icon: TrendingUp, label: "Level", value: Math.max(1, Math.floor(totalActiveDays / 7)).toString() },
+    { icon: Target, label: "Streak", value: streak > 0 ? `${streak}🔥` : "0" },
+    { icon: Flame, label: "Goal", value: ({ lose: "Burn", gain: "Gain", maintain: "Keep", endurance: "Run", flexibility: "Flex", strength: "Lift" } as Record<string, string>)[userGoal] || "Fit" },
   ];
 
   const hasChartData = weeklyData.some(w => w.days > 0);
@@ -207,6 +216,42 @@ const Profile = () => {
             </div>
           ))}
         </div>
+
+        {/* User Info Card */}
+        {(userWeight || userHeight || userGoal) && (
+          <div className="mt-4 gym-gradient-card rounded-2xl p-4">
+            <h3 className="text-sm font-bold flex items-center gap-2 mb-3">
+              <Target className="h-4 w-4 text-primary" /> My Profile
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                userGender && { label: "Gender", value: userGender.charAt(0).toUpperCase() + userGender.slice(1), emoji: "👤" },
+                userHeight && { label: "Height", value: `${userHeight} cm`, emoji: "📏" },
+                userWeight && { label: "Weight", value: `${userWeight} kg`, emoji: "⚖️" },
+                userTargetWeight && { label: "Target", value: `${userTargetWeight} kg`, emoji: "🎯" },
+                userDuration && { label: "Session", value: `${userDuration} min`, emoji: "⏱️" },
+                userExperience && { label: "Level", value: userExperience.charAt(0).toUpperCase() + userExperience.slice(1), emoji: "🌱" },
+              ].filter(Boolean).map((item, i) => (
+                <div key={i} className="flex items-center gap-2 rounded-xl bg-secondary/50 px-3 py-2.5">
+                  <span className="text-sm">{item!.emoji}</span>
+                  <div>
+                    <p className="text-[8px] text-muted-foreground">{item!.label}</p>
+                    <p className="text-[11px] font-bold">{item!.value}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {focusParts.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {focusParts.map(p => (
+                  <span key={p} className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">
+                    {p.charAt(0).toUpperCase() + p.slice(1)}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Activity Calendar */}
         <div className="mt-5 gym-gradient-card rounded-2xl p-4">

@@ -132,6 +132,26 @@ const Index = () => {
   const currentAvatar = animalAvatars.find(a => a.id === selectedAvatar) || animalAvatars[0];
   const userName = localStorage.getItem("ado-user-name") || currentAvatar.name;
 
+  // Compute real data from onboarding + tracking
+  const userWeight = parseInt(localStorage.getItem("ado-user-weight") || "70");
+  const userGoal = localStorage.getItem("ado-user-goal") || "";
+  const goalAdjust: Record<string, number> = { lose: -500, gain: 300, maintain: 0, endurance: 200, flexibility: -200, strength: 400 };
+  const dailyCalorieTarget = userWeight * 30 + (goalAdjust[userGoal] || 0);
+  const dailyBurnTarget = Math.round(dailyCalorieTarget * 0.25);
+
+  const dietLog: { date: string; calories: number }[] = JSON.parse(localStorage.getItem("ado-diet-log") || "[]");
+  const today = new Date().toISOString().split("T")[0];
+  const todayCalories = dietLog.filter(l => l.date === today).reduce((s, l) => s + l.calories, 0);
+
+  const workoutLog: { date: string; calories: number }[] = JSON.parse(localStorage.getItem("ado-workout-log") || "[]");
+  const todayBurnt = workoutLog.filter(l => l.date === today).reduce((s, l) => s + l.calories, 0);
+
+  const goalProgress = dailyCalorieTarget > 0 ? Math.min(100, Math.round((todayCalories / dailyCalorieTarget) * 100)) : 0;
+
+  const activeDaysList: string[] = JSON.parse(localStorage.getItem("ado-active-days") || "[]");
+  const userLevel = Math.max(1, Math.floor(activeDaysList.length / 7));
+  const totalSessions = activeDaysList.length;
+
   return (
     <MobileLayout>
       <div className="animate-fade-in space-y-5 px-4 pt-6">
@@ -139,7 +159,7 @@ const Index = () => {
         <div className="flex items-center justify-between">
           <button onClick={() => navigate("/growth")} className="flex items-center gap-2 rounded-full border border-border px-3 py-2 transition-transform active:scale-95">
             <TrendingUp className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-bold">Lvl 4</span>
+            <span className="text-[10px] font-bold">Lvl {userLevel}</span>
           </button>
           <h1 className="text-lg font-bold">Ado Work</h1>
           <div className="flex items-center gap-2">
@@ -186,13 +206,13 @@ const Index = () => {
           <h2 className="mb-3 text-lg font-bold">Track your goal</h2>
           <div className="gym-gradient-card rounded-2xl p-4">
             <div className="flex items-center gap-4">
-              <ProgressRing progress={12} size={70} strokeWidth={5} />
+              <ProgressRing progress={goalProgress} size={70} strokeWidth={5} />
               <div className="flex-1 space-y-3">
                 <button onClick={() => navigate("/diet-insight")} className="flex w-full items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/20"><UtensilsCrossed className="h-3.5 w-3.5 text-primary" /></div>
                     <div className="text-left">
-                      <p className="text-sm font-bold"><span className="text-foreground">0</span><span className="text-muted-foreground text-xs">/2,784.65 Kcal</span></p>
+                      <p className="text-sm font-bold"><span className="text-foreground">{todayCalories.toLocaleString()}</span><span className="text-muted-foreground text-xs">/{dailyCalorieTarget.toLocaleString()} Kcal</span></p>
                       <p className="text-[10px] text-muted-foreground">Calories Consumed</p>
                     </div>
                   </div>
@@ -202,7 +222,7 @@ const Index = () => {
                   <div className="flex items-center gap-2">
                     <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gym-green/20"><Flame className="h-3.5 w-3.5 text-gym-green" /></div>
                     <div className="text-left">
-                      <p className="text-sm font-bold"><span className="text-foreground">0</span><span className="text-muted-foreground text-xs">/712.53 Kcal</span></p>
+                      <p className="text-sm font-bold"><span className="text-foreground">{todayBurnt.toLocaleString()}</span><span className="text-muted-foreground text-xs">/{dailyBurnTarget.toLocaleString()} Kcal</span></p>
                       <p className="text-[10px] text-muted-foreground">Calories Burnt</p>
                     </div>
                   </div>
@@ -319,20 +339,20 @@ const Index = () => {
             <h3 className="text-sm font-bold text-primary-foreground">My Fitness Goal</h3>
           </div>
           <div className="relative p-4">
-            <div className="absolute right-3 top-3 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold text-primary">2%</div>
+            <div className="absolute right-3 top-3 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold text-primary">{totalSessions > 0 ? `${Math.min(100, Math.round((totalSessions / 365) * 100))}%` : "0%"}</div>
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20"><Target className="h-4 w-4 text-primary" /></div>
                 <div>
-                  <p className="text-xl font-bold">6<span className="text-xs text-muted-foreground">/260</span></p>
-                  <p className="text-[10px] text-muted-foreground">Workout Sessions</p>
+                  <p className="text-xl font-bold">{totalSessions}<span className="text-xs text-muted-foreground">/365</span></p>
+                  <p className="text-[10px] text-muted-foreground">Active Days</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20"><Target className="h-4 w-4 text-primary" /></div>
                 <div>
-                  <p className="text-xl font-bold">364</p>
-                  <p className="text-[10px] text-muted-foreground">Total Days</p>
+                  <p className="text-xl font-bold">{(() => { const g = localStorage.getItem("ado-user-goal"); const map: Record<string, string> = { lose: "🔥 Lose", gain: "💪 Gain", maintain: "⚖️ Keep", endurance: "🏃 Cardio", flexibility: "🧘 Flex", strength: "🏋️ Strong" }; return map[g || ""] || "🎯 Fit"; })()}</p>
+                  <p className="text-[10px] text-muted-foreground">Current Goal</p>
                 </div>
               </div>
             </div>
