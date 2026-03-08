@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight, Flame, Droplets, Beef, Wheat, Apple, Clock, Star, Sparkles, Leaf, Coffee, Sun, Moon, Sunset, Zap, Heart, Check, Plus, Minus, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight, Flame, Droplets, Beef, Wheat, Apple, Clock, Star, Sparkles, Leaf, Coffee, Sun, Moon, Sunset, Zap, Heart, Check, Plus, Minus, X, Upload, FileText, Trash2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
 
@@ -548,6 +548,60 @@ const mealPlans: Record<DietType, Record<Goal, Meal[]>> = {
   },
 };
 
+interface ImportedMealItem {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  emoji: string;
+  quantity: string;
+}
+
+interface ImportedMeal {
+  name: string;
+  time: string;
+  items: ImportedMealItem[];
+}
+
+interface ImportedDietPlan {
+  id: string;
+  label: string;
+  importedAt: string;
+  meals: ImportedMeal[];
+}
+
+const parseDietText = (text: string): ImportedMeal[] => {
+  const meals: ImportedMeal[] = [];
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  let currentMeal: ImportedMeal | null = null;
+  for (const line of lines) {
+    const mealHeaderMatch = line.match(/^(breakfast|lunch|dinner|snack|pre[- ]?workout|post[- ]?workout|mid[- ]?morning|afternoon|evening|meal\s*\d+|brunch)/i);
+    if (mealHeaderMatch) {
+      if (currentMeal) meals.push(currentMeal);
+      const timeMatch = line.match(/(\d{1,2}[:.]\d{2}\s*(am|pm)?)/i);
+      currentMeal = { name: mealHeaderMatch[0].charAt(0).toUpperCase() + mealHeaderMatch[0].slice(1), time: timeMatch ? timeMatch[1] : "", items: [] };
+      continue;
+    }
+    if (!currentMeal) currentMeal = { name: "Meal", time: "", items: [] };
+    if (line.length > 1) {
+      const calMatch = line.match(/(\d+)\s*(cal|kcal|calories)/i);
+      const proteinMatch = line.match(/(\d+)\s*g?\s*protein|protein[:\s]*(\d+)/i);
+      const carbMatch = line.match(/(\d+)\s*g?\s*carb|carb[s]?[:\s]*(\d+)/i);
+      const fatMatch = line.match(/(\d+)\s*g?\s*fat|fat[:\s]*(\d+)/i);
+      const qtyMatch = line.match(/(\d+\s*(g|ml|oz|cup|tbsp|tsp|pcs?|slice|serving|scoop)s?)/i);
+      let name = line.replace(/[-–•*]\s*/, "").replace(/\d+\s*(cal|kcal|calories)/gi, "").replace(/\d+\s*g?\s*(protein|carb|carbs|fat)/gi, "").replace(/\d+\s*(g|ml|oz|cup|tbsp|tsp|pcs?|slice|serving|scoop)s?/gi, "").replace(/[,|/]+\s*$/g, "").trim() || "Food Item";
+      const foodEmojis: Record<string, string> = { chicken: "🍗", rice: "🍚", egg: "🍳", fish: "🐟", bread: "🍞", milk: "🥛", banana: "🍌", salad: "🥗", beef: "🥩", potato: "🥔", oat: "🥣", shake: "🥤", pasta: "🍝", nut: "🥜", avocado: "🥑" };
+      let emoji = "🍽️";
+      for (const [key, val] of Object.entries(foodEmojis)) { if (name.toLowerCase().includes(key)) { emoji = val; break; } }
+      currentMeal.items.push({ name, calories: calMatch ? parseInt(calMatch[1]) : 0, protein: proteinMatch ? parseInt(proteinMatch[1] || proteinMatch[2]) : 0, carbs: carbMatch ? parseInt(carbMatch[1] || carbMatch[2]) : 0, fat: fatMatch ? parseInt(fatMatch[1] || fatMatch[2]) : 0, emoji, quantity: qtyMatch ? qtyMatch[1] : "" });
+    }
+  }
+  if (currentMeal && currentMeal.items.length > 0) meals.push(currentMeal);
+  if (meals.length === 0 && lines.length > 0) { meals.push({ name: "Imported Meal", time: "", items: lines.map(l => ({ name: l.replace(/[-–•*]\s*/, "").trim() || "Item", calories: 0, protein: 0, carbs: 0, fat: 0, emoji: "🍽️", quantity: "" })) }); }
+  return meals;
+};
+
 const DietPlan = () => {
   const navigate = useNavigate();
   const [goal, setGoal] = useState<Goal>("maintain");
@@ -557,6 +611,13 @@ const DietPlan = () => {
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showDietPicker, setShowDietPicker] = useState(false);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+  const [showImported, setShowImported] = useState(false);
+  const [importedDiets, setImportedDiets] = useState<ImportedDietPlan[]>(() => JSON.parse(localStorage.getItem("ado-imported-diets") || "[]"));
+  const [expandedImportPlan, setExpandedImportPlan] = useState<string | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importLabel, setImportLabel] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const baseCalories = Math.round(weight * 30);
   const totalCalories = baseCalories + goalConfig[goal].calorieAdjust;
@@ -699,7 +760,123 @@ const DietPlan = () => {
           )}
         </div>
 
-        {/* Macro Bars */}
+        {/* Imported Data Section */}
+        <div className="mt-3">
+          <button onClick={() => setShowImported(!showImported)}
+            className="flex w-full items-center justify-between gym-gradient-card rounded-2xl p-4 transition-transform active:scale-[0.98]">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">📥</span>
+              <div>
+                <p className="text-xs font-bold">Imported Data</p>
+                <p className="text-[10px] text-muted-foreground">{importedDiets.length} imported plan{importedDiets.length !== 1 ? "s" : ""}</p>
+              </div>
+            </div>
+            <ChevronRight className={`h-4 w-4 text-muted-foreground transition-transform ${showImported ? "rotate-90" : ""}`} />
+          </button>
+          {showImported && (
+            <div className="mt-2 space-y-2 animate-fade-in">
+              {importedDiets.length === 0 ? (
+                <div className="gym-gradient-card rounded-2xl p-5 text-center">
+                  <p className="text-2xl mb-2">📋</p>
+                  <p className="text-xs font-bold">No imported diets yet</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">Import diet data from Settings or tap below</p>
+                </div>
+              ) : (
+                importedDiets.map(plan => (
+                  <div key={plan.id} className="rounded-2xl overflow-hidden">
+                    <button onClick={() => setExpandedImportPlan(expandedImportPlan === plan.id ? null : plan.id)}
+                      className="flex w-full items-center gap-3 gym-gradient-card p-4 transition-transform active:scale-[0.98]">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-lg">📥</div>
+                      <div className="flex-1 text-left">
+                        <p className="text-xs font-bold">{plan.label}</p>
+                        <p className="text-[9px] text-muted-foreground">{plan.meals.length} meals · {new Date(plan.importedAt).toLocaleDateString()}</p>
+                      </div>
+                      <button onClick={(e) => { e.stopPropagation(); const updated = importedDiets.filter(d => d.id !== plan.id); setImportedDiets(updated); localStorage.setItem("ado-imported-diets", JSON.stringify(updated)); }}
+                        className="p-1.5 rounded-lg bg-destructive/10 active:scale-90 transition-transform">
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </button>
+                    </button>
+                    {expandedImportPlan === plan.id && (
+                      <div className="bg-card/50 p-3 space-y-3 animate-fade-in">
+                        {plan.meals.map((meal, mi) => (
+                          <div key={mi} className="rounded-xl bg-secondary/50 p-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Sun className="h-3.5 w-3.5 text-primary" />
+                              <p className="text-[11px] font-bold">{meal.name}</p>
+                              {meal.time && <span className="text-[9px] text-muted-foreground">{meal.time}</span>}
+                              <span className="ml-auto text-[9px] font-bold text-primary">{meal.items.reduce((s, i) => s + i.calories, 0)} cal</span>
+                            </div>
+                            {meal.items.map((item, ii) => (
+                              <div key={ii} className="flex items-center gap-2 py-1.5 border-t border-border/30">
+                                <span className="text-sm">{item.emoji}</span>
+                                <div className="flex-1">
+                                  <p className="text-[10px] font-semibold">{item.name}</p>
+                                  {item.quantity && <p className="text-[8px] text-muted-foreground">{item.quantity}</p>}
+                                </div>
+                                <div className="text-right">
+                                  {item.calories > 0 && <p className="text-[9px] font-bold">{item.calories} cal</p>}
+                                  <p className="text-[7px] text-muted-foreground">
+                                    {item.protein > 0 && `P:${item.protein}g `}{item.carbs > 0 && `C:${item.carbs}g `}{item.fat > 0 && `F:${item.fat}g`}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+              {/* Import button inside imported data */}
+              <button onClick={() => setShowImportModal(true)} className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/30 p-4 text-xs font-bold text-primary active:scale-95 transition-transform">
+                <Upload className="h-4 w-4" /> Import Diet Data
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Import Modal */}
+        {showImportModal && (
+          <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/60" onClick={() => setShowImportModal(false)}>
+            <div onClick={e => e.stopPropagation()} className="w-full max-w-md rounded-t-3xl bg-card p-5 pb-8 animate-fade-in max-h-[85vh] overflow-y-auto">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold">📥 Import Diet Data</h2>
+                <button onClick={() => setShowImportModal(false)} className="p-1"><X className="h-5 w-5 text-muted-foreground" /></button>
+              </div>
+              <p className="mt-1 text-[10px] text-muted-foreground">Paste diet data from any app or upload a file.</p>
+              <div className="mt-3">
+                <input type="text" placeholder="Plan name (e.g. MyFitnessPal Export)" value={importLabel} onChange={e => setImportLabel(e.target.value)}
+                  className="w-full rounded-xl bg-secondary px-3 py-2.5 text-xs text-foreground placeholder:text-muted-foreground outline-none" />
+              </div>
+              <textarea placeholder={"Paste diet plan here...\n\nBreakfast - 7:00 AM\nEgg Whites 150cal 22g protein\nToast 80cal"} value={importText} onChange={e => setImportText(e.target.value)} rows={6}
+                className="mt-2 w-full rounded-xl bg-secondary px-3 py-2.5 text-xs text-foreground placeholder:text-muted-foreground outline-none resize-none" />
+              <input ref={fileInputRef} type="file" accept=".txt,.json,.csv" className="hidden" onChange={(e) => {
+                const file = e.target.files?.[0]; if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => setImportText(ev.target?.result as string);
+                reader.readAsText(file);
+                if (fileInputRef.current) fileInputRef.current.value = "";
+              }} />
+              <button onClick={() => fileInputRef.current?.click()} className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-secondary py-2.5 text-xs font-semibold text-foreground active:scale-95 transition-transform">
+                <FileText className="h-3.5 w-3.5" /> Upload File
+              </button>
+              <button onClick={() => {
+                if (!importText.trim()) return;
+                const meals = parseDietText(importText);
+                if (meals.length === 0) return;
+                const newPlan: ImportedDietPlan = { id: Date.now().toString(), label: importLabel.trim() || `Import ${importedDiets.length + 1}`, importedAt: new Date().toISOString(), meals };
+                const updated = [...importedDiets, newPlan];
+                setImportedDiets(updated);
+                localStorage.setItem("ado-imported-diets", JSON.stringify(updated));
+                setImportText(""); setImportLabel(""); setShowImportModal(false);
+              }} className="mt-3 w-full rounded-xl gym-gradient-orange py-3 text-sm font-bold text-primary-foreground active:scale-95 transition-transform">
+                Import Diet Plan
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="mt-4 gym-gradient-card rounded-2xl p-4">
           <h3 className="text-xs font-bold mb-3 flex items-center gap-2"><Zap className="h-3.5 w-3.5 text-primary" /> Daily Macros Breakdown</h3>
           {[
