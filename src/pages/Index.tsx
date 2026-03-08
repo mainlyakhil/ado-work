@@ -166,6 +166,27 @@ const Index = () => {
           </button>
         </div>
 
+        {/* Diet Plan Card */}
+        <button onClick={() => navigate("/diet-plan")} className="w-full relative overflow-hidden gym-gradient-card rounded-2xl p-4 transition-transform active:scale-[0.98]">
+          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary/10" />
+          <div className="absolute -right-2 bottom--2 h-16 w-16 rounded-full bg-primary/5" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15">
+              <Apple className="h-6 w-6 text-primary" />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-bold">Diet Plan</p>
+              <p className="text-[10px] text-muted-foreground">Personalized meal plans with macro tracking</p>
+              <div className="mt-1.5 flex items-center gap-1.5">
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">6 diet types</span>
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">4 goals</span>
+                <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">Full macros</span>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </div>
+        </button>
+
         {/* Select My Work */}
         <div>
           <div className="flex items-center justify-between mb-3">
