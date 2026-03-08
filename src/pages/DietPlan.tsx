@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Flame, Droplets, Beef, Wheat, Apple, Clock, Star, Sparkles, Leaf, Coffee, Sun, Moon, Sunset, Zap, Heart, Check, Plus, Minus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Flame, Droplets, Beef, Wheat, Apple, Clock, Star, Sparkles, Leaf, Coffee, Sun, Moon, Sunset, Zap, Heart, Check, Plus, Minus, X, Upload, FileText, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
