@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Plans from "./pages/Plans";
 import Workouts from "./pages/Workouts";
 import Community from "./pages/Community";
+import DietPlan from "./pages/DietPlan";
 import BodyPartWorkout from "./pages/BodyPartWorkout";
 import BodySelector from "./pages/BodySelector";
 import Settings from "./pages/Settings";
