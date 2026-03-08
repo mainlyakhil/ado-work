@@ -1,4 +1,4 @@
-import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2, TrendingUp, Settings, UserCircle, Clock, CheckCircle, Apple } from "lucide-react";
+import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2, TrendingUp, Settings, UserCircle, Clock, CheckCircle, Apple, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MobileLayout from "@/components/MobileLayout";
@@ -131,6 +131,9 @@ const Index = () => {
           </button>
           <h1 className="text-lg font-bold">Ado Work</h1>
           <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/install")} className="rounded-full border border-border p-2 transition-transform active:scale-95">
+              <Download className="h-4 w-4" />
+            </button>
             <button onClick={() => navigate("/settings")} className="rounded-full border border-border p-2 transition-transform active:scale-95">
               <Settings className="h-4 w-4" />
             </button>

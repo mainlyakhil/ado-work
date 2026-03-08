@@ -18,6 +18,7 @@ import BodySelector from "./pages/BodySelector";
 import Settings from "./pages/Settings";
 import GrowthStatus from "./pages/GrowthStatus";
 import SleepSchedule from "./pages/SleepSchedule";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/growth" element={<GrowthStatus />} />
             <Route path="/sleep" element={<SleepSchedule />} />
+            <Route path="/install" element={<Install />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
