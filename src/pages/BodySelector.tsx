@@ -80,7 +80,7 @@ const poses: Pose[] = [
   {
     name: "Relaxed",
     head: { cx: 100, cy: 28 },
-    face: { leftEye: { x: 95, y: 24 }, rightEye: { x: 105, y: 24 }, mouth: "M96 34 Q100 36 104 34", brow: "M92 21 L98 20 M102 20 L108 21" },
+    face: { leftEye: { x: 95, y: 24 }, rightEye: { x: 105, y: 24 }, mouth: "M96 33 Q100 36 104 33", brow: "M92 21 L98 20.5 M102 20.5 L108 21" },
     neck: { x: 91, y: 46, w: 18, h: 14 },
     torso: "M80 66 L120 66 L124 170 L76 170 Z",
     leftArm: "M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z",
