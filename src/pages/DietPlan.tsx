@@ -548,6 +548,60 @@ const mealPlans: Record<DietType, Record<Goal, Meal[]>> = {
   },
 };
 
+interface ImportedMealItem {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  emoji: string;
+  quantity: string;
+}
+
+interface ImportedMeal {
+  name: string;
+  time: string;
+  items: ImportedMealItem[];
+}
+
+interface ImportedDietPlan {
+  id: string;
+  label: string;
+  importedAt: string;
+  meals: ImportedMeal[];
+}
+
+const parseDietText = (text: string): ImportedMeal[] => {
+  const meals: ImportedMeal[] = [];
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  let currentMeal: ImportedMeal | null = null;
+  for (const line of lines) {
+    const mealHeaderMatch = line.match(/^(breakfast|lunch|dinner|snack|pre[- ]?workout|post[- ]?workout|mid[- ]?morning|afternoon|evening|meal\s*\d+|brunch)/i);
+    if (mealHeaderMatch) {
+      if (currentMeal) meals.push(currentMeal);
+      const timeMatch = line.match(/(\d{1,2}[:.]\d{2}\s*(am|pm)?)/i);
+      currentMeal = { name: mealHeaderMatch[0].charAt(0).toUpperCase() + mealHeaderMatch[0].slice(1), time: timeMatch ? timeMatch[1] : "", items: [] };
+      continue;
+    }
+    if (!currentMeal) currentMeal = { name: "Meal", time: "", items: [] };
+    if (line.length > 1) {
+      const calMatch = line.match(/(\d+)\s*(cal|kcal|calories)/i);
+      const proteinMatch = line.match(/(\d+)\s*g?\s*protein|protein[:\s]*(\d+)/i);
+      const carbMatch = line.match(/(\d+)\s*g?\s*carb|carb[s]?[:\s]*(\d+)/i);
+      const fatMatch = line.match(/(\d+)\s*g?\s*fat|fat[:\s]*(\d+)/i);
+      const qtyMatch = line.match(/(\d+\s*(g|ml|oz|cup|tbsp|tsp|pcs?|slice|serving|scoop)s?)/i);
+      let name = line.replace(/[-–•*]\s*/, "").replace(/\d+\s*(cal|kcal|calories)/gi, "").replace(/\d+\s*g?\s*(protein|carb|carbs|fat)/gi, "").replace(/\d+\s*(g|ml|oz|cup|tbsp|tsp|pcs?|slice|serving|scoop)s?/gi, "").replace(/[,|/]+\s*$/g, "").trim() || "Food Item";
+      const foodEmojis: Record<string, string> = { chicken: "🍗", rice: "🍚", egg: "🍳", fish: "🐟", bread: "🍞", milk: "🥛", banana: "🍌", salad: "🥗", beef: "🥩", potato: "🥔", oat: "🥣", shake: "🥤", pasta: "🍝", nut: "🥜", avocado: "🥑" };
+      let emoji = "🍽️";
+      for (const [key, val] of Object.entries(foodEmojis)) { if (name.toLowerCase().includes(key)) { emoji = val; break; } }
+      currentMeal.items.push({ name, calories: calMatch ? parseInt(calMatch[1]) : 0, protein: proteinMatch ? parseInt(proteinMatch[1] || proteinMatch[2]) : 0, carbs: carbMatch ? parseInt(carbMatch[1] || carbMatch[2]) : 0, fat: fatMatch ? parseInt(fatMatch[1] || fatMatch[2]) : 0, emoji, quantity: qtyMatch ? qtyMatch[1] : "" });
+    }
+  }
+  if (currentMeal && currentMeal.items.length > 0) meals.push(currentMeal);
+  if (meals.length === 0 && lines.length > 0) { meals.push({ name: "Imported Meal", time: "", items: lines.map(l => ({ name: l.replace(/[-–•*]\s*/, "").trim() || "Item", calories: 0, protein: 0, carbs: 0, fat: 0, emoji: "🍽️", quantity: "" })) }); }
+  return meals;
+};
+
 const DietPlan = () => {
   const navigate = useNavigate();
   const [goal, setGoal] = useState<Goal>("maintain");
@@ -557,6 +611,13 @@ const DietPlan = () => {
   const [showGoalPicker, setShowGoalPicker] = useState(false);
   const [showDietPicker, setShowDietPicker] = useState(false);
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
+  const [showImported, setShowImported] = useState(false);
+  const [importedDiets, setImportedDiets] = useState<ImportedDietPlan[]>(() => JSON.parse(localStorage.getItem("ado-imported-diets") || "[]"));
+  const [expandedImportPlan, setExpandedImportPlan] = useState<string | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importLabel, setImportLabel] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const baseCalories = Math.round(weight * 30);
   const totalCalories = baseCalories + goalConfig[goal].calorieAdjust;
