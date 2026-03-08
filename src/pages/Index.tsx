@@ -18,12 +18,18 @@ const bodyParts = [
   { id: "shoulders", emoji: "🤷", label: "Shoulders" },
   { id: "arms", emoji: "💪", label: "Arms" },
   { id: "forearms", emoji: "🦾", label: "Forearms" },
-  { id: "legs", emoji: "🦵", label: "Legs" },
+  { id: "legs", emoji: "🦵", label: "Quads" },
+  { id: "hamstrings", emoji: "🦿", label: "Hamstrings" },
   { id: "core", emoji: "🔥", label: "Core" },
+  { id: "obliques", emoji: "↔️", label: "Obliques" },
   { id: "glutes", emoji: "🍑", label: "Glutes" },
   { id: "calves", emoji: "🏔️", label: "Calves" },
   { id: "neck", emoji: "🦴", label: "Neck" },
   { id: "traps", emoji: "🔺", label: "Traps" },
+  { id: "lats", emoji: "🔱", label: "Lats" },
+  { id: "lower-back", emoji: "⬇️", label: "Lower Back" },
+  { id: "hip-flexors", emoji: "🧘", label: "Hip Flexors" },
+  { id: "rear-delts", emoji: "🎯", label: "Rear Delts" },
 ];
 
 const animalAvatars = [
