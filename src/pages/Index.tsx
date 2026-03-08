@@ -339,20 +339,20 @@ const Index = () => {
             <h3 className="text-sm font-bold text-primary-foreground">My Fitness Goal</h3>
           </div>
           <div className="relative p-4">
-            <div className="absolute right-3 top-3 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold text-primary">2%</div>
+            <div className="absolute right-3 top-3 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold text-primary">{totalSessions > 0 ? `${Math.min(100, Math.round((totalSessions / 365) * 100))}%` : "0%"}</div>
             <div className="flex items-center gap-8">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20"><Target className="h-4 w-4 text-primary" /></div>
                 <div>
-                  <p className="text-xl font-bold">6<span className="text-xs text-muted-foreground">/260</span></p>
-                  <p className="text-[10px] text-muted-foreground">Workout Sessions</p>
+                  <p className="text-xl font-bold">{totalSessions}<span className="text-xs text-muted-foreground">/365</span></p>
+                  <p className="text-[10px] text-muted-foreground">Active Days</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20"><Target className="h-4 w-4 text-primary" /></div>
                 <div>
-                  <p className="text-xl font-bold">364</p>
-                  <p className="text-[10px] text-muted-foreground">Total Days</p>
+                  <p className="text-xl font-bold">{(() => { const g = localStorage.getItem("ado-user-goal"); const map: Record<string, string> = { lose: "🔥 Lose", gain: "💪 Gain", maintain: "⚖️ Keep", endurance: "🏃 Cardio", flexibility: "🧘 Flex", strength: "🏋️ Strong" }; return map[g || ""] || "🎯 Fit"; })()}</p>
+                  <p className="text-[10px] text-muted-foreground">Current Goal</p>
                 </div>
               </div>
             </div>
