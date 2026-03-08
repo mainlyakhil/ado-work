@@ -1,4 +1,4 @@
-import { ChevronLeft, Palette, LogIn, Mail, ExternalLink, Trash2, Upload, FileText, X } from "lucide-react";
+import { ChevronLeft, Palette, LogIn, Mail, ExternalLink, Trash2, Upload, FileText, X, User, Save } from "lucide-react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
