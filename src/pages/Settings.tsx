@@ -129,12 +129,36 @@ const Settings = () => {
   const navigate = useNavigate();
   const { currentTheme, setTheme } = useTheme();
   const { toast } = useToast();
-  const [section, setSection] = useState<"themes" | "login" | "support" | null>("themes");
+  const [section, setSection] = useState<"themes" | "login" | "support" | "profile" | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [importText, setImportText] = useState("");
   const [importLabel, setImportLabel] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Profile edit state
+  const [profileName, setProfileName] = useState(() => localStorage.getItem("ado-user-name") || "");
+  const [profileGender, setProfileGender] = useState(() => localStorage.getItem("ado-user-gender") || "");
+  const [profileAge, setProfileAge] = useState(() => localStorage.getItem("ado-user-age") || "");
+  const [profileHeight, setProfileHeight] = useState(() => localStorage.getItem("ado-user-height") || "");
+  const [profileWeight, setProfileWeight] = useState(() => localStorage.getItem("ado-user-weight") || "");
+  const [profileTargetWeight, setProfileTargetWeight] = useState(() => localStorage.getItem("ado-user-target-weight") || "");
+  const [profileGoal, setProfileGoal] = useState(() => localStorage.getItem("ado-user-goal") || "");
+  const [profileDuration, setProfileDuration] = useState(() => localStorage.getItem("ado-user-workout-duration") || "");
+  const [profileExperience, setProfileExperience] = useState(() => localStorage.getItem("ado-user-experience") || "");
+
+  const handleSaveProfile = () => {
+    localStorage.setItem("ado-user-name", profileName.trim());
+    localStorage.setItem("ado-user-gender", profileGender);
+    localStorage.setItem("ado-user-age", profileAge);
+    localStorage.setItem("ado-user-height", profileHeight);
+    localStorage.setItem("ado-user-weight", profileWeight);
+    localStorage.setItem("ado-user-target-weight", profileTargetWeight);
+    localStorage.setItem("ado-user-goal", profileGoal);
+    localStorage.setItem("ado-user-workout-duration", profileDuration);
+    localStorage.setItem("ado-user-experience", profileExperience);
+    toast({ title: "Profile Updated! ✅", description: "Your changes have been saved." });
+  };
 
   const handleClearAppData = () => {
     localStorage.clear();
