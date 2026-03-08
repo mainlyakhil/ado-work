@@ -224,13 +224,8 @@ const BodySelector = () => {
         {step === "body" && (
           <div className="mt-4 animate-fade-in">
             <p className="text-center text-xs text-muted-foreground mb-2">Tap a muscle group to target</p>
-            <div className="relative mx-auto pose-flex" style={{ width: 240, height: 380 }}>
+            <div className="relative mx-auto pose-flex" style={{ width: 260, height: 460 }}>
               <BodyModel />
-              {selectedPart && (
-                <div className="absolute top-2 right-0 rounded-full bg-primary px-3 py-1 text-[10px] font-bold text-primary-foreground animate-scale-in shadow-lg">
-                  {bodyParts.find(b => b.id === selectedPart)?.label} ✓
-                </div>
-              )}
             </div>
 
             <div className="mt-2 grid grid-cols-4 gap-1.5 pb-4">
