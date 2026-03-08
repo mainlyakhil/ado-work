@@ -217,6 +217,42 @@ const Profile = () => {
           ))}
         </div>
 
+        {/* User Info Card */}
+        {(userWeight || userHeight || userGoal) && (
+          <div className="mt-4 gym-gradient-card rounded-2xl p-4">
+            <h3 className="text-sm font-bold flex items-center gap-2 mb-3">
+              <Target className="h-4 w-4 text-primary" /> My Profile
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                userGender && { label: "Gender", value: userGender.charAt(0).toUpperCase() + userGender.slice(1), emoji: "👤" },
+                userHeight && { label: "Height", value: `${userHeight} cm`, emoji: "📏" },
+                userWeight && { label: "Weight", value: `${userWeight} kg`, emoji: "⚖️" },
+                userTargetWeight && { label: "Target", value: `${userTargetWeight} kg`, emoji: "🎯" },
+                userDuration && { label: "Session", value: `${userDuration} min`, emoji: "⏱️" },
+                userExperience && { label: "Level", value: userExperience.charAt(0).toUpperCase() + userExperience.slice(1), emoji: "🌱" },
+              ].filter(Boolean).map((item, i) => (
+                <div key={i} className="flex items-center gap-2 rounded-xl bg-secondary/50 px-3 py-2.5">
+                  <span className="text-sm">{item!.emoji}</span>
+                  <div>
+                    <p className="text-[8px] text-muted-foreground">{item!.label}</p>
+                    <p className="text-[11px] font-bold">{item!.value}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {focusParts.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {focusParts.map(p => (
+                  <span key={p} className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">
+                    {p.charAt(0).toUpperCase() + p.slice(1)}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Activity Calendar */}
         <div className="mt-5 gym-gradient-card rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
