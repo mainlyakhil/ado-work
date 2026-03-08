@@ -106,35 +106,52 @@ const BodySelector = () => {
     return "fill-secondary/70 hover:fill-primary/25 muscle-idle-glow";
   };
 
-  // Muscle hotspot zones mapped to percentage positions on the body image
-  const muscleZones: { id: string; label: string; top: string; left: string; width: string; height: string }[] = [
-    { id: "neck", label: "Neck", top: "12.5%", left: "40%", width: "20%", height: "3%" },
-    { id: "traps", label: "Traps", top: "15.5%", left: "28%", width: "44%", height: "4%" },
-    { id: "shoulders", label: "Shoulders", top: "18%", left: "14%", width: "18%", height: "6%" },
-    { id: "shoulders", label: "Shoulders", top: "18%", left: "68%", width: "18%", height: "6%" },
-    { id: "chest", label: "Chest", top: "21%", left: "30%", width: "40%", height: "7%" },
-    { id: "arms", label: "Arms", top: "22%", left: "10%", width: "16%", height: "10%" },
-    { id: "arms", label: "Arms", top: "22%", left: "74%", width: "16%", height: "10%" },
-    { id: "forearms", label: "Forearms", top: "33%", left: "5%", width: "14%", height: "10%" },
-    { id: "forearms", label: "Forearms", top: "33%", left: "81%", width: "14%", height: "10%" },
-    { id: "lats", label: "Lats", top: "25%", left: "22%", width: "10%", height: "10%" },
-    { id: "lats", label: "Lats", top: "25%", left: "68%", width: "10%", height: "10%" },
-    { id: "core", label: "Core", top: "30%", left: "35%", width: "30%", height: "9%" },
-    { id: "obliques", label: "Obliques", top: "30%", left: "24%", width: "12%", height: "8%" },
-    { id: "obliques", label: "Obliques", top: "30%", left: "64%", width: "12%", height: "8%" },
-    { id: "lower-back", label: "Lower Back", top: "37%", left: "35%", width: "30%", height: "4%" },
-    { id: "hip-flexors", label: "Hip Flexors", top: "41%", left: "30%", width: "14%", height: "5%" },
-    { id: "hip-flexors", label: "Hip Flexors", top: "41%", left: "56%", width: "14%", height: "5%" },
-    { id: "glutes", label: "Glutes", top: "42%", left: "32%", width: "36%", height: "6%" },
-    { id: "legs", label: "Quads", top: "48%", left: "25%", width: "22%", height: "16%" },
-    { id: "legs", label: "Quads", top: "48%", left: "53%", width: "22%", height: "16%" },
-    { id: "hamstrings", label: "Hamstrings", top: "52%", left: "22%", width: "12%", height: "12%" },
-    { id: "hamstrings", label: "Hamstrings", top: "52%", left: "66%", width: "12%", height: "12%" },
-    { id: "calves", label: "Calves", top: "68%", left: "24%", width: "18%", height: "14%" },
-    { id: "calves", label: "Calves", top: "68%", left: "58%", width: "18%", height: "14%" },
-    { id: "back", label: "Back", top: "22%", left: "36%", width: "28%", height: "6%" },
-    { id: "rear-delts", label: "Rear Delts", top: "18%", left: "18%", width: "10%", height: "4%" },
-    { id: "rear-delts", label: "Rear Delts", top: "18%", left: "72%", width: "10%", height: "4%" },
+  // Hotspot zones calibrated to the transparent body-model.png
+  const muscleZones: { id: string; label: string; top: string; left: string; width: string; height: string; borderRadius?: string }[] = [
+    // Head/Neck region (~0-16% height)
+    { id: "neck", label: "Neck", top: "13%", left: "38%", width: "24%", height: "3.5%", borderRadius: "50%" },
+    // Traps (slope from neck to shoulders ~16-20%)
+    { id: "traps", label: "Traps", top: "16.5%", left: "26%", width: "48%", height: "4%" },
+    // Shoulders (deltoid caps ~19-25%)
+    { id: "shoulders", label: "Shoulders", top: "19%", left: "12%", width: "20%", height: "7%", borderRadius: "50%" },
+    { id: "shoulders", label: "Shoulders", top: "19%", left: "68%", width: "20%", height: "7%", borderRadius: "50%" },
+    // Rear delts (behind shoulders)
+    { id: "rear-delts", label: "Rear Delts", top: "20%", left: "15%", width: "10%", height: "4%", borderRadius: "50%" },
+    { id: "rear-delts", label: "Rear Delts", top: "20%", left: "75%", width: "10%", height: "4%", borderRadius: "50%" },
+    // Chest (~24-31%)
+    { id: "chest", label: "Chest", top: "24%", left: "28%", width: "44%", height: "7%" },
+    // Back (behind chest)
+    { id: "back", label: "Back", top: "26%", left: "34%", width: "32%", height: "5%" },
+    // Upper arms / biceps (~25-35%)
+    { id: "arms", label: "Arms", top: "26%", left: "6%", width: "18%", height: "12%", borderRadius: "30%" },
+    { id: "arms", label: "Arms", top: "26%", left: "76%", width: "18%", height: "12%", borderRadius: "30%" },
+    // Lats (side torso ~28-38%)
+    { id: "lats", label: "Lats", top: "29%", left: "20%", width: "12%", height: "10%" },
+    { id: "lats", label: "Lats", top: "29%", left: "68%", width: "12%", height: "10%" },
+    // Core / Abs (~32-41%)
+    { id: "core", label: "Core", top: "32%", left: "34%", width: "32%", height: "10%" },
+    // Obliques (flanking abs)
+    { id: "obliques", label: "Obliques", top: "33%", left: "24%", width: "12%", height: "8%", borderRadius: "40%" },
+    { id: "obliques", label: "Obliques", top: "33%", left: "64%", width: "12%", height: "8%", borderRadius: "40%" },
+    // Forearms (~37-47%)
+    { id: "forearms", label: "Forearms", top: "38%", left: "2%", width: "16%", height: "11%", borderRadius: "30%" },
+    { id: "forearms", label: "Forearms", top: "38%", left: "82%", width: "16%", height: "11%", borderRadius: "30%" },
+    // Lower back (~40-44%)
+    { id: "lower-back", label: "Lower Back", top: "41%", left: "34%", width: "32%", height: "4%" },
+    // Hip flexors (~44-48%)
+    { id: "hip-flexors", label: "Hip Flexors", top: "44%", left: "28%", width: "16%", height: "5%", borderRadius: "50%" },
+    { id: "hip-flexors", label: "Hip Flexors", top: "44%", left: "56%", width: "16%", height: "5%", borderRadius: "50%" },
+    // Glutes (~46-50%)
+    { id: "glutes", label: "Glutes", top: "46%", left: "30%", width: "40%", height: "5%" },
+    // Quads (~50-66%)
+    { id: "legs", label: "Quads", top: "51%", left: "22%", width: "24%", height: "16%" },
+    { id: "legs", label: "Quads", top: "51%", left: "54%", width: "24%", height: "16%" },
+    // Hamstrings (behind quads)
+    { id: "hamstrings", label: "Hamstrings", top: "54%", left: "20%", width: "14%", height: "12%" },
+    { id: "hamstrings", label: "Hamstrings", top: "54%", left: "66%", width: "14%", height: "12%" },
+    // Calves (~70-84%)
+    { id: "calves", label: "Calves", top: "70%", left: "22%", width: "20%", height: "14%" },
+    { id: "calves", label: "Calves", top: "70%", left: "58%", width: "20%", height: "14%" },
   ];
 
   const getZoneStyle = (zone: typeof muscleZones[0]) => {
@@ -146,60 +163,62 @@ const BodySelector = () => {
       left: zone.left,
       width: zone.width,
       height: zone.height,
-      borderRadius: "8px",
+      borderRadius: zone.borderRadius || "10px",
       cursor: "pointer",
-      transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      transition: "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
       background: isActive
-        ? "radial-gradient(ellipse, hsl(var(--primary) / 0.6) 0%, hsl(var(--primary) / 0.15) 70%, transparent 100%)"
+        ? "radial-gradient(ellipse, hsl(var(--primary) / 0.55) 0%, hsl(var(--primary) / 0.1) 80%, transparent 100%)"
         : isSelected
-        ? "radial-gradient(ellipse, hsl(var(--primary) / 0.35) 0%, hsl(var(--primary) / 0.08) 70%, transparent 100%)"
+        ? "radial-gradient(ellipse, hsl(var(--primary) / 0.3) 0%, hsl(var(--primary) / 0.05) 80%, transparent 100%)"
         : "transparent",
       boxShadow: isActive
-        ? "0 0 24px 8px hsl(var(--primary) / 0.5), inset 0 0 12px hsl(var(--primary) / 0.3)"
+        ? "0 0 28px 10px hsl(var(--primary) / 0.45), inset 0 0 14px hsl(var(--primary) / 0.25)"
         : isSelected
-        ? "0 0 16px 4px hsl(var(--primary) / 0.25), inset 0 0 8px hsl(var(--primary) / 0.15)"
+        ? "0 0 18px 5px hsl(var(--primary) / 0.2)"
         : "none",
-      transform: isActive ? "scale(1.15)" : isSelected ? "scale(1.05)" : "scale(1)",
+      transform: isActive ? "scale(1.12)" : isSelected ? "scale(1.04)" : "scale(1)",
       border: isActive
-        ? "1.5px solid hsl(var(--primary) / 0.7)"
+        ? "1.5px solid hsl(var(--primary) / 0.6)"
         : isSelected
-        ? "1px solid hsl(var(--primary) / 0.3)"
+        ? "1px solid hsl(var(--primary) / 0.25)"
         : "1px solid transparent",
     };
   };
 
   const BodyModel = () => (
-    <div className="relative w-full h-full">
-      {/* Ambient glow behind the model */}
+    <div className="relative w-full h-full flex items-center justify-center">
+      {/* Soft ambient aura */}
       <div
-        className="absolute inset-0 rounded-3xl"
+        className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at 50% 40%, hsl(var(--primary) / 0.08) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.06) 0%, transparent 65%)",
         }}
       />
-      {/* The actual body image */}
+      {/* Body image */}
       <img
         src={bodyModelImg}
         alt="Human body muscle map"
-        className="w-full h-full object-contain relative z-10 drop-shadow-[0_0_30px_hsl(var(--primary)/0.2)]"
+        className="w-full h-full object-contain relative z-10"
         draggable={false}
-        style={{ userSelect: "none" }}
+        style={{
+          userSelect: "none",
+          filter: "drop-shadow(0 0 20px hsl(var(--primary) / 0.15)) drop-shadow(0 0 60px hsl(var(--primary) / 0.08))",
+        }}
       />
-      {/* Clickable hotspot overlays */}
+      {/* Interactive hotspot overlays */}
       <div className="absolute inset-0 z-20">
         {muscleZones.map((zone, i) => (
           <div
             key={`${zone.id}-${i}`}
             style={getZoneStyle(zone)}
             onClick={() => handlePartClick(zone.id)}
-            className="hover:bg-primary/10 active:bg-primary/20"
           />
         ))}
       </div>
-      {/* Selected label floating tag */}
+      {/* Floating selected label */}
       {selectedPart && (
-        <div
-          className="absolute z-30 left-1/2 -translate-x-1/2 bottom-2 rounded-full bg-primary px-4 py-1.5 text-[11px] font-bold text-primary-foreground animate-scale-in shadow-[0_0_20px_hsl(var(--primary)/0.4)]"
+        <div className="absolute z-30 left-1/2 -translate-x-1/2 bottom-4 rounded-full bg-primary px-5 py-2 text-xs font-bold text-primary-foreground animate-scale-in"
+          style={{ boxShadow: "0 0 24px hsl(var(--primary) / 0.5), 0 4px 12px hsl(0 0% 0% / 0.3)" }}
         >
           {bodyParts.find(b => b.id === selectedPart)?.label} ✓
         </div>
@@ -224,7 +243,7 @@ const BodySelector = () => {
         {step === "body" && (
           <div className="mt-4 animate-fade-in">
             <p className="text-center text-xs text-muted-foreground mb-2">Tap a muscle group to target</p>
-            <div className="relative mx-auto pose-flex" style={{ width: 260, height: 460 }}>
+            <div className="relative mx-auto pose-flex" style={{ maxWidth: 280, height: 480 }}>
               <BodyModel />
             </div>
 
