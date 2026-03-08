@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import BottomNav from "./BottomNav";
 
-const MobileLayout = ({ children }: { children: ReactNode }) => {
+const MobileLayout = ({ children, hideNav }: { children: ReactNode; hideNav?: boolean }) => {
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -11,8 +11,8 @@ const MobileLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="mx-auto min-h-screen max-w-md bg-background">
-      <div className="pb-20">{children}</div>
-      <BottomNav />
+      <div className={hideNav ? "" : "pb-20"}>{children}</div>
+      {!hideNav && <BottomNav />}
     </div>
   );
 };
