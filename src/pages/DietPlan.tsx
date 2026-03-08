@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
 
 type Goal = "lose" | "maintain" | "gain" | "bulk";
-type DietType = "balanced" | "highProtein" | "keto" | "vegan" | "paleo" | "mediterranean";
+type DietType = "balanced" | "highProtein" | "keto" | "vegan" | "paleo" | "mediterranean" | "carnivore" | "intermittent";
 
 interface MealItem {
   name: string;
