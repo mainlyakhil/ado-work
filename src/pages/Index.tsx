@@ -131,6 +131,9 @@ const Index = () => {
           </button>
           <h1 className="text-lg font-bold">Ado Work</h1>
           <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/install")} className="rounded-full border border-border p-2 transition-transform active:scale-95">
+              <Download className="h-4 w-4" />
+            </button>
             <button onClick={() => navigate("/settings")} className="rounded-full border border-border p-2 transition-transform active:scale-95">
               <Settings className="h-4 w-4" />
             </button>
