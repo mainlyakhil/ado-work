@@ -151,6 +151,16 @@ const Index = () => {
   const activeDaysList: string[] = JSON.parse(localStorage.getItem("ado-active-days") || "[]");
   const userLevel = Math.max(1, Math.floor(activeDaysList.length / 7));
   const totalSessions = activeDaysList.length;
+
+  return (
+    <MobileLayout>
+      <div className="animate-fade-in space-y-5 px-4 pt-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <button onClick={() => navigate("/growth")} className="flex items-center gap-2 rounded-full border border-border px-3 py-2 transition-transform active:scale-95">
+            <TrendingUp className="h-4 w-4 text-primary" />
+            <span className="text-[10px] font-bold">Lvl {userLevel}</span>
+          </button>
           <h1 className="text-lg font-bold">Ado Work</h1>
           <div className="flex items-center gap-2">
             <button onClick={() => navigate("/install")} className="rounded-full border border-border p-2 transition-transform active:scale-95">
