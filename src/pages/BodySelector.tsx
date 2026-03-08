@@ -224,7 +224,6 @@ const BodySelector = () => {
   const [animatingPart, setAnimatingPart] = useState<string | null>(null);
   const [hoveredPart, setHoveredPart] = useState<string | null>(null);
   const [poseIndex, setPoseIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Cycle poses — just swap index; CSS transition handles the smoothness
   useEffect(() => {
