@@ -45,6 +45,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/growth" element={<GrowthStatus />} />
             <Route path="/sleep" element={<SleepSchedule />} />
+            <Route path="/install" element={<Install />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
