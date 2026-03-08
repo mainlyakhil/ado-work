@@ -1,9 +1,8 @@
-import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2, TrendingUp, Settings } from "lucide-react";
+import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2, TrendingUp, Settings, UserCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MobileLayout from "@/components/MobileLayout";
 import ProgressRing from "@/components/ProgressRing";
-import offersBanner from "@/assets/offers-banner.png";
 import { useToast } from "@/hooks/use-toast";
 
 interface Reminder {
@@ -18,8 +17,13 @@ const bodyParts = [
   { id: "back", emoji: "🔙", label: "Back" },
   { id: "shoulders", emoji: "🤷", label: "Shoulders" },
   { id: "arms", emoji: "💪", label: "Arms" },
+  { id: "forearms", emoji: "🦾", label: "Forearms" },
   { id: "legs", emoji: "🦵", label: "Legs" },
   { id: "core", emoji: "🔥", label: "Core" },
+  { id: "glutes", emoji: "🍑", label: "Glutes" },
+  { id: "calves", emoji: "🏔️", label: "Calves" },
+  { id: "neck", emoji: "🦴", label: "Neck" },
+  { id: "traps", emoji: "🔺", label: "Traps" },
 ];
 
 const animalAvatars = [
@@ -143,33 +147,57 @@ const Index = () => {
           </button>
         </div>
 
-        {/* Body Part Selector */}
+        {/* Select My Work - Body Model */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold">Select My Work</h2>
+            <button onClick={() => navigate("/body-selector")} className="flex items-center gap-1 text-[10px] font-semibold text-primary">
+              <UserCircle className="h-3.5 w-3.5" /> Full Body Model <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+          <button onClick={() => navigate("/body-selector")} className="w-full gym-gradient-card rounded-2xl p-4 transition-transform active:scale-[0.98]">
+            <div className="flex items-center gap-4">
+              {/* Mini Body SVG */}
+              <svg viewBox="0 0 80 140" className="h-24 w-16 shrink-0">
+                <ellipse cx="40" cy="12" rx="8" ry="10" className="fill-primary/30 stroke-primary/50" strokeWidth="1" />
+                <rect x="30" y="22" width="20" height="40" rx="5" className="fill-primary/20 stroke-primary/50" strokeWidth="1" />
+                <rect x="15" y="26" width="10" height="30" rx="4" className="fill-primary/15 stroke-primary/40" strokeWidth="1" />
+                <rect x="55" y="26" width="10" height="30" rx="4" className="fill-primary/15 stroke-primary/40" strokeWidth="1" />
+                <rect x="30" y="64" width="10" height="35" rx="4" className="fill-primary/15 stroke-primary/40" strokeWidth="1" />
+                <rect x="42" y="64" width="10" height="35" rx="4" className="fill-primary/15 stroke-primary/40" strokeWidth="1" />
+                <ellipse cx="35" cy="103" rx="6" ry="3" className="fill-primary/10 stroke-primary/30" strokeWidth="0.5" />
+                <ellipse cx="47" cy="103" rx="6" ry="3" className="fill-primary/10 stroke-primary/30" strokeWidth="0.5" />
+              </svg>
+              <div className="flex-1">
+                <p className="text-sm font-bold">Tap to select body part</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Interactive human body model with equipment selection & bodyweight workouts</p>
+                <div className="mt-2 flex items-center gap-1">
+                  <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">11 body parts</span>
+                  <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">8 equipment types</span>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+            </div>
+          </button>
+        </div>
+
+        {/* Target Body Part Grid */}
         <div>
           <h2 className="mb-3 text-sm font-bold">Target Body Part</h2>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             {bodyParts.map(part => (
               <button
                 key={part.id}
                 onClick={() => handleBodyPartClick(part.id)}
-                className={`gym-gradient-card flex flex-col items-center gap-1.5 rounded-2xl p-3 transition-all ${
+                className={`gym-gradient-card flex flex-col items-center gap-1.5 rounded-2xl p-2.5 transition-all ${
                   bouncingId === part.id ? "animate-bounce scale-110" : "active:scale-95"
                 }`}
               >
-                <span className="text-2xl">{part.emoji}</span>
-                <span className="text-[10px] font-semibold">{part.label}</span>
+                <span className="text-xl">{part.emoji}</span>
+                <span className="text-[9px] font-semibold">{part.label}</span>
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Offers Card */}
-        <div className="gym-gradient-card relative overflow-hidden rounded-2xl p-4">
-          <div className="relative z-10">
-            <h3 className="text-base font-bold">Offers & Coupons</h3>
-            <p className="mt-1 text-xs text-muted-foreground">You can explore coupons and rewards</p>
-            <button className="mt-3 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground transition-transform active:scale-95">View My Offers</button>
-          </div>
-          <img src={offersBanner} alt="Offers" className="absolute -right-4 bottom-0 top-0 h-full w-40 object-contain opacity-80" />
         </div>
 
         {/* Track Your Goal */}
