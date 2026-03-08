@@ -182,7 +182,7 @@ const poses: Pose[] = [
   {
     name: "Abs & Thigh",
     head: { cx: 100, cy: 28, tilt: -4 },
-    face: { leftEye: { x: 95, y: 24 }, rightEye: { x: 105, y: 24 }, mouth: "M95 34 Q100 32 105 34", brow: "M91 20 L97 18.5 M103 18.5 L109 20" },
+    face: { leftEye: { x: 95, y: 24 }, rightEye: { x: 105, y: 24 }, mouth: "M95 33 Q100 36 105 33", brow: "M91 20 L97 18 M103 18 L109 20" },
     neck: { x: 91, y: 46, w: 18, h: 14 },
     torso: "M78 66 L122 66 L126 170 L74 170 Z",
     leftArm: "M42 84 Q28 78 20 66 Q16 56 20 48 L30 50 Q28 58 32 66 Q38 76 48 82 Z",
