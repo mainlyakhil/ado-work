@@ -56,7 +56,7 @@ const Settings = () => {
                   style={isActive ? { background: `linear-gradient(145deg, ${cardColor}, ${bgColor})` } : {}}
                 >
                   {isActive && (
-                    <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: primaryColor, color: fgColor === primaryColor ? '#000' : `hsl(${theme.colors["--primary-foreground"]})` }}>✓</div>
+                    <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: primaryColor, color: `hsl(${theme.colors["--primary-foreground"]})` }}>✓</div>
                   )}
                   <div className="flex gap-1.5">
                     <div className="h-7 w-7 rounded-lg" style={{ background: primaryColor }} />
@@ -64,7 +64,7 @@ const Settings = () => {
                     <div className="h-7 w-7 rounded-lg" style={{ background: cardColor }} />
                   </div>
                   <span className="text-lg">{theme.emoji}</span>
-                  <span className="text-[9px] font-semibold" style={{ color: fgColor }}>{theme.name}</span>
+                  <span className="text-[9px] font-semibold text-foreground">{theme.name}</span>
                 </button>
               );
             })}

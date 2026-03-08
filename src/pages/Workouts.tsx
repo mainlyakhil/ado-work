@@ -418,9 +418,9 @@ const Workouts = () => {
           <input type="text" placeholder="Search workouts..." value={search} onChange={(e) => setSearch(e.target.value)} className="flex-1 bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none" />
         </div>
 
-        <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        <div className="mt-3 flex flex-wrap gap-2">
           {categories.map((cat) => (
-            <button key={cat} onClick={() => setSelectedCategory(cat)} className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-colors ${selectedCategory === cat ? "gym-gradient-orange text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>
+            <button key={cat} onClick={() => setSelectedCategory(cat)} className={`rounded-full px-3.5 py-1.5 text-[11px] font-semibold transition-all duration-200 ${selectedCategory === cat ? "gym-gradient-orange text-primary-foreground shadow-md" : "bg-secondary text-muted-foreground hover:bg-secondary/80"}`}>
               {cat}
             </button>
           ))}
