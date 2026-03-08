@@ -8,31 +8,16 @@ import { BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Responsive
 
 import { animalAvatars, avatarCategories } from "@/data/avatars";
 
-// Generate mock active days for the last 3 months
-const generateActiveDays = (): string[] => {
+// Only use real saved active days - no mock generation
+const getActiveDays = (): string[] => {
   const saved = localStorage.getItem("ado-active-days");
   if (saved) return JSON.parse(saved);
-
-  const days: string[] = [];
-  const now = new Date();
-  for (let i = 0; i < 90; i++) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    // ~65% chance of being active
-    if (Math.random() < 0.65) {
-      days.push(d.toISOString().split("T")[0]);
-    }
-  }
-  // Always include today
-  const today = now.toISOString().split("T")[0];
-  if (!days.includes(today)) days.push(today);
-  localStorage.setItem("ado-active-days", JSON.stringify(days));
-  return days;
+  return [];
 };
 
 const calculateStreak = (activeDays: string[]): number => {
+  if (activeDays.length === 0) return 0;
   const sorted = [...activeDays].sort((a, b) => b.localeCompare(a));
-  const today = new Date().toISOString().split("T")[0];
   let streak = 0;
   const d = new Date();
   for (let i = 0; i < 365; i++) {
@@ -60,7 +45,7 @@ const getWeeklyActivity = (activeDays: string[]) => {
       if (activeDays.includes(day.toISOString().split("T")[0])) count++;
     }
     const label = w === 0 ? "This" : w === 1 ? "Last" : `${w}w`;
-    weeks.push({ week: label, days: count, minutes: count * Math.floor(30 + Math.random() * 40) });
+    weeks.push({ week: label, days: count, minutes: count * 35 });
   }
   return weeks;
 };
@@ -76,13 +61,25 @@ const getMonthlyConsistency = (activeDays: string[]) => {
       const dateStr = new Date(d.getFullYear(), d.getMonth(), day).toISOString().split("T")[0];
       if (activeDays.includes(dateStr)) activeDaysInMonth++;
     }
-    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Dec"];
     months.push({
-      month: monthNames[d.getMonth()],
-      percentage: Math.round((activeDaysInMonth / daysInMonth) * 100),
+      month: monthNames[d.getMonth()] || "?",
+      percentage: daysInMonth > 0 ? Math.round((activeDaysInMonth / daysInMonth) * 100) : 0,
     });
   }
   return months;
+};
+
+// Track today as active when visiting profile
+const markTodayActive = () => {
+  const today = new Date().toISOString().split("T")[0];
+  const saved = localStorage.getItem("ado-active-days");
+  const days: string[] = saved ? JSON.parse(saved) : [];
+  if (!days.includes(today)) {
+    days.push(today);
+    localStorage.setItem("ado-active-days", JSON.stringify(days));
+  }
+  return days;
 };
 
 const Profile = () => {
@@ -96,12 +93,15 @@ const Profile = () => {
     return { year: now.getFullYear(), month: now.getMonth() };
   });
 
-  const activeDays = useMemo(() => generateActiveDays(), []);
+  // Mark today and get active days
+  const activeDays = useMemo(() => markTodayActive(), []);
+  const hasData = activeDays.length > 0;
   const streak = useMemo(() => calculateStreak(activeDays), [activeDays]);
   const weeklyData = useMemo(() => getWeeklyActivity(activeDays), [activeDays]);
   const consistencyData = useMemo(() => getMonthlyConsistency(activeDays), [activeDays]);
   const totalActiveDays = activeDays.length;
 
+  const userName = localStorage.getItem("ado-user-name") || "User";
   const currentAvatar = animalAvatars.find(a => a.id === selectedAvatar) || animalAvatars[0];
 
   const handleAvatarSelect = (id: string) => {
@@ -115,7 +115,6 @@ const Profile = () => {
     }, 400);
   };
 
-  // Calendar helpers
   const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const daysInMonth = new Date(calendarMonth.year, calendarMonth.month + 1, 0).getDate();
   const firstDayOfWeek = new Date(calendarMonth.year, calendarMonth.month, 1).getDay();
@@ -129,30 +128,30 @@ const Profile = () => {
   }, [calendarMonth, daysInMonth, firstDayOfWeek]);
 
   const prevMonth = () => {
-    setCalendarMonth(prev => {
-      const m = prev.month === 0 ? 11 : prev.month - 1;
-      const y = prev.month === 0 ? prev.year - 1 : prev.year;
-      return { year: y, month: m };
-    });
+    setCalendarMonth(prev => ({
+      year: prev.month === 0 ? prev.year - 1 : prev.year,
+      month: prev.month === 0 ? 11 : prev.month - 1,
+    }));
   };
 
   const nextMonth = () => {
     const now = new Date();
     const next = new Date(calendarMonth.year, calendarMonth.month + 1, 1);
     if (next > new Date(now.getFullYear(), now.getMonth() + 1, 0)) return;
-    setCalendarMonth(prev => {
-      const m = prev.month === 11 ? 0 : prev.month + 1;
-      const y = prev.month === 11 ? prev.year + 1 : prev.year;
-      return { year: y, month: m };
-    });
+    setCalendarMonth(prev => ({
+      year: prev.month === 11 ? prev.year + 1 : prev.year,
+      month: prev.month === 11 ? 0 : prev.month + 1,
+    }));
   };
 
   const stats = [
     { icon: Calendar, label: "Days Active", value: totalActiveDays.toString() },
     { icon: TrendingUp, label: "Workouts", value: Math.round(totalActiveDays * 0.85).toString() },
     { icon: Target, label: "Goals Met", value: Math.round(totalActiveDays * 0.27).toString() },
-    { icon: Flame, label: "Streak", value: `${streak}🔥` },
+    { icon: Flame, label: "Streak", value: streak > 0 ? `${streak}🔥` : "0" },
   ];
+
+  const hasChartData = weeklyData.some(w => w.days > 0);
 
   return (
     <MobileLayout>
@@ -166,29 +165,37 @@ const Profile = () => {
         {/* Avatar */}
         <div className="mt-6 flex flex-col items-center">
           <button onClick={() => setShowAvatarPicker(true)} className="relative transition-transform active:scale-90 hover:scale-105">
-            <ProgressRing progress={72} size={100} strokeWidth={4} />
+            <ProgressRing progress={hasData ? Math.min(100, totalActiveDays * 2) : 0} size={100} strokeWidth={4} />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-3xl">{currentAvatar.emoji}</div>
             </div>
           </button>
-          <h2 className="mt-3 text-lg font-bold">{currentAvatar.name}</h2>
-          <p className="text-xs text-muted-foreground">Fitness Enthusiast · Level 4</p>
+          <h2 className="mt-3 text-lg font-bold">{userName}</h2>
+          <p className="text-xs text-muted-foreground">Fitness Enthusiast · Level {Math.max(1, Math.floor(totalActiveDays / 7))}</p>
         </div>
 
         {/* Streak Banner */}
-        <div className="mt-5 relative overflow-hidden rounded-2xl gym-gradient-orange p-4">
-          <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary-foreground/10" />
-          <div className="absolute right-8 bottom-1 h-12 w-12 rounded-full bg-primary-foreground/5" />
-          <div className="relative flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary-foreground/20">
-              <span className="text-3xl">🔥</span>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-primary-foreground">{streak} Day Streak!</p>
-              <p className="text-[10px] text-primary-foreground/70">Keep going — consistency beats intensity</p>
+        {streak > 0 ? (
+          <div className="mt-5 relative overflow-hidden rounded-2xl gym-gradient-orange p-4">
+            <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-primary-foreground/10" />
+            <div className="absolute right-8 bottom-1 h-12 w-12 rounded-full bg-primary-foreground/5" />
+            <div className="relative flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary-foreground/20">
+                <span className="text-3xl">🔥</span>
+              </div>
+              <div>
+                <p className="text-2xl font-black text-primary-foreground">{streak} Day Streak!</p>
+                <p className="text-[10px] text-primary-foreground/70">Keep going — consistency beats intensity</p>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-5 rounded-2xl gym-gradient-card p-5 text-center">
+            <span className="text-3xl">🚀</span>
+            <p className="mt-2 text-sm font-bold">Start your streak!</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Use the app daily to build your streak</p>
+          </div>
+        )}
 
         {/* Stats Grid */}
         <div className="mt-4 grid grid-cols-4 gap-2">
@@ -218,14 +225,12 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Day headers */}
           <div className="grid grid-cols-7 gap-1 mb-1">
             {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(d => (
               <div key={d} className="text-center text-[8px] font-bold text-muted-foreground">{d}</div>
             ))}
           </div>
 
-          {/* Calendar grid */}
           <div className="grid grid-cols-7 gap-1">
             {calendarDays.map((day, i) => {
               if (day === null) return <div key={`empty-${i}`} className="h-8" />;
@@ -244,7 +249,6 @@ const Profile = () => {
             })}
           </div>
 
-          {/* Legend */}
           <div className="flex items-center gap-4 mt-3 justify-center">
             <div className="flex items-center gap-1.5">
               <div className="h-3 w-3 rounded bg-primary" />
@@ -262,87 +266,102 @@ const Profile = () => {
         </div>
 
         {/* Weekly Activity Chart */}
-        <div className="mt-4 gym-gradient-card rounded-2xl p-4">
-          <h3 className="text-sm font-bold flex items-center gap-2 mb-1">
-            <Zap className="h-4 w-4 text-primary" /> Weekly Activity
-          </h3>
-          <p className="text-[10px] text-muted-foreground mb-3">Active days & workout minutes per week</p>
-          <div className="h-44">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyData} barGap={2}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="week" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={25} />
-                <Tooltip
-                  contentStyle={{
-                    background: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "12px",
-                    fontSize: "11px",
-                    color: "hsl(var(--foreground))",
-                  }}
-                  formatter={(value: number, name: string) => [value, name === "days" ? "Active Days" : "Minutes"]}
-                />
-                <Bar dataKey="days" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="days" />
-                <Bar dataKey="minutes" fill="hsl(var(--primary) / 0.3)" radius={[4, 4, 0, 0]} name="minutes" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="flex justify-center gap-4 mt-2">
-            <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded bg-primary" />
-              <span className="text-[9px] text-muted-foreground">Active Days</span>
+        {hasChartData ? (
+          <div className="mt-4 gym-gradient-card rounded-2xl p-4">
+            <h3 className="text-sm font-bold flex items-center gap-2 mb-1">
+              <Zap className="h-4 w-4 text-primary" /> Weekly Activity
+            </h3>
+            <p className="text-[10px] text-muted-foreground mb-3">Active days & workout minutes per week</p>
+            <div className="h-44">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={weeklyData} barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                  <XAxis dataKey="week" tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={25} />
+                  <Tooltip
+                    contentStyle={{
+                      background: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "12px",
+                      fontSize: "11px",
+                      color: "hsl(var(--foreground))",
+                    }}
+                    formatter={(value: number, name: string) => [value, name === "days" ? "Active Days" : "Minutes"]}
+                  />
+                  <Bar dataKey="days" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="days" />
+                  <Bar dataKey="minutes" fill="hsl(var(--primary) / 0.3)" radius={[4, 4, 0, 0]} name="minutes" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="h-2.5 w-2.5 rounded bg-primary/30" />
-              <span className="text-[9px] text-muted-foreground">Minutes</span>
+            <div className="flex justify-center gap-4 mt-2">
+              <div className="flex items-center gap-1.5">
+                <div className="h-2.5 w-2.5 rounded bg-primary" />
+                <span className="text-[9px] text-muted-foreground">Active Days</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="h-2.5 w-2.5 rounded bg-primary/30" />
+                <span className="text-[9px] text-muted-foreground">Minutes</span>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-4 gym-gradient-card rounded-2xl p-5 text-center">
+            <Zap className="mx-auto h-8 w-8 text-muted-foreground/30" />
+            <p className="mt-2 text-xs font-bold">No activity data yet</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Start tracking workouts to see your weekly activity graph</p>
+          </div>
+        )}
 
         {/* Consistency Graph */}
-        <div className="mt-4 gym-gradient-card rounded-2xl p-4">
-          <h3 className="text-sm font-bold flex items-center gap-2 mb-1">
-            <TrendingUp className="h-4 w-4 text-primary" /> Consistency Score
-          </h3>
-          <p className="text-[10px] text-muted-foreground mb-3">% of days active each month</p>
-          <div className="h-44">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={consistencyData}>
-                <defs>
-                  <linearGradient id="consistencyGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={30}
-                  domain={[0, 100]} tickFormatter={v => `${v}%`} />
-                <Tooltip
-                  contentStyle={{
-                    background: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "12px",
-                    fontSize: "11px",
-                    color: "hsl(var(--foreground))",
-                  }}
-                  formatter={(value: number) => [`${value}%`, "Consistency"]}
-                />
-                <Area type="monotone" dataKey="percentage" stroke="hsl(var(--primary))" strokeWidth={2.5}
-                  fill="url(#consistencyGrad)" dot={{ fill: "hsl(var(--primary))", r: 4, strokeWidth: 0 }}
-                  activeDot={{ r: 6, stroke: "hsl(var(--primary))", strokeWidth: 2, fill: "hsl(var(--card))" }} />
-              </AreaChart>
-            </ResponsiveContainer>
+        {hasChartData ? (
+          <div className="mt-4 gym-gradient-card rounded-2xl p-4">
+            <h3 className="text-sm font-bold flex items-center gap-2 mb-1">
+              <TrendingUp className="h-4 w-4 text-primary" /> Consistency Score
+            </h3>
+            <p className="text-[10px] text-muted-foreground mb-3">% of days active each month</p>
+            <div className="h-44">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={consistencyData}>
+                  <defs>
+                    <linearGradient id="consistencyGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={30}
+                    domain={[0, 100]} tickFormatter={v => `${v}%`} />
+                  <Tooltip
+                    contentStyle={{
+                      background: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "12px",
+                      fontSize: "11px",
+                      color: "hsl(var(--foreground))",
+                    }}
+                    formatter={(value: number) => [`${value}%`, "Consistency"]}
+                  />
+                  <Area type="monotone" dataKey="percentage" stroke="hsl(var(--primary))" strokeWidth={2.5}
+                    fill="url(#consistencyGrad)" dot={{ fill: "hsl(var(--primary))", r: 4, strokeWidth: 0 }}
+                    activeDot={{ r: 6, stroke: "hsl(var(--primary))", strokeWidth: 2, fill: "hsl(var(--card))" }} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-3 flex items-center justify-center gap-2">
+              <span className="text-[10px] text-muted-foreground">Average Consistency:</span>
+              <span className="text-sm font-black text-primary">
+                {Math.round(consistencyData.reduce((s, d) => s + d.percentage, 0) / consistencyData.length)}%
+              </span>
+            </div>
           </div>
-          {/* Average */}
-          <div className="mt-3 flex items-center justify-center gap-2">
-            <span className="text-[10px] text-muted-foreground">Average Consistency:</span>
-            <span className="text-sm font-black text-primary">
-              {Math.round(consistencyData.reduce((s, d) => s + d.percentage, 0) / consistencyData.length)}%
-            </span>
+        ) : (
+          <div className="mt-4 gym-gradient-card rounded-2xl p-5 text-center">
+            <TrendingUp className="mx-auto h-8 w-8 text-muted-foreground/30" />
+            <p className="mt-2 text-xs font-bold">No consistency data yet</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Use the app regularly to see your consistency score</p>
           </div>
-        </div>
+        )}
 
         {/* This Week Bar */}
         <div className="mt-4 gym-gradient-card rounded-2xl p-4">
@@ -355,7 +374,7 @@ const Profile = () => {
               const dateStr = startOfWeek.toISOString().split("T")[0];
               const isActive = activeDays.includes(dateStr);
               const isFuture = dateStr > today;
-              const val = isActive ? [60, 80, 45, 90, 70, 50, 40][i] : 0;
+              const val = isActive ? 100 : 0;
               return (
                 <div key={day} className="flex items-center gap-3">
                   <span className={`w-8 text-[10px] font-semibold ${isActive ? "text-primary" : "text-muted-foreground"}`}>{day}</span>
@@ -364,7 +383,7 @@ const Profile = () => {
                       style={{ width: isFuture ? "0%" : `${val}%` }} />
                   </div>
                   <span className="w-10 text-right text-[10px] font-semibold">
-                    {isFuture ? "—" : isActive ? `${val}%` : "Rest"}
+                    {isFuture ? "—" : isActive ? "Active" : "Rest"}
                   </span>
                   {isActive && <span className="text-[10px]">✅</span>}
                 </div>

@@ -77,6 +77,17 @@ const Index = () => {
     return saved ? JSON.parse(saved) : defaultWorkoutHistory;
   });
 
+  // Mark today as active for tracking
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const saved = localStorage.getItem("ado-active-days");
+    const days: string[] = saved ? JSON.parse(saved) : [];
+    if (!days.includes(today)) {
+      days.push(today);
+      localStorage.setItem("ado-active-days", JSON.stringify(days));
+    }
+  }, []);
+
   useEffect(() => { localStorage.setItem("ado-reminders", JSON.stringify(reminders)); }, [reminders]);
 
   useEffect(() => {
@@ -119,6 +130,7 @@ const Index = () => {
   };
 
   const currentAvatar = animalAvatars.find(a => a.id === selectedAvatar) || animalAvatars[0];
+  const userName = localStorage.getItem("ado-user-name") || currentAvatar.name;
 
   return (
     <MobileLayout>
@@ -154,7 +166,7 @@ const Index = () => {
             {currentAvatar.emoji}
           </button>
           <div>
-            <p className="text-sm font-bold">Hey, {currentAvatar.name}! 💪</p>
+            <p className="text-sm font-bold">Hey, {userName}! 💪</p>
             <p className="text-[10px] text-muted-foreground">Today's workout: 45 min</p>
           </div>
         </div>
