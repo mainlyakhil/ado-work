@@ -58,12 +58,12 @@ const noEquipWorkouts: NoEquipWorkout[] = [
 // Each pose is a set of SVG paths for the body in different positions
 interface Pose {
   name: string;
-  // All coordinates relative to viewBox 0 0 200 370
-  head: { cx: number; cy: number };
+  head: { cx: number; cy: number; tilt?: number }; // tilt in degrees
+  face: { leftEye: { x: number; y: number }; rightEye: { x: number; y: number }; mouth: string; brow?: string };
   neck: { x: number; y: number; w: number; h: number };
-  torso: string; // main torso outline
-  leftArm: string; // left arm path
-  rightArm: string; // right arm path
+  torso: string;
+  leftArm: string;
+  rightArm: string;
   leftForearm: string;
   rightForearm: string;
   leftHand: { cx: number; cy: number };
