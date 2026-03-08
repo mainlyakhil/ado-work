@@ -1,10 +1,10 @@
-import { Home, LayoutGrid, QrCode, Users, User } from "lucide-react";
+import { Home, LayoutGrid, Dumbbell, Users, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
   { icon: LayoutGrid, label: "Plans", path: "/plans" },
-  { icon: QrCode, label: "QR", path: "/qr" },
+  { icon: Dumbbell, label: "Workouts", path: "/workouts" },
   { icon: Users, label: "Community", path: "/community" },
   { icon: User, label: "Profile", path: "/profile" },
 ];
