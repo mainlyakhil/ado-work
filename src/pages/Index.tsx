@@ -119,6 +119,7 @@ const Index = () => {
   };
 
   const currentAvatar = animalAvatars.find(a => a.id === selectedAvatar) || animalAvatars[0];
+  const userName = localStorage.getItem("ado-user-name") || currentAvatar.name;
 
   return (
     <MobileLayout>

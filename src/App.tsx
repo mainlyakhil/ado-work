@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
 import DietTracker from "./pages/DietTracker";
@@ -19,9 +19,16 @@ import Settings from "./pages/Settings";
 import GrowthStatus from "./pages/GrowthStatus";
 import SleepSchedule from "./pages/SleepSchedule";
 import Install from "./pages/Install";
+import Welcome from "./pages/Welcome";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const RequireOnboarding = ({ children }: { children: React.ReactNode }) => {
+  const isOnboarded = localStorage.getItem("ado-onboarded") === "true";
+  if (!isOnboarded) return <Navigate to="/welcome" replace />;
+  return <>{children}</>;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -31,21 +38,22 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/diet" element={<DietTracker />} />
-            <Route path="/diet-insight" element={<DietInsight />} />
-            <Route path="/workout" element={<WorkoutTracker />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/plans" element={<Plans />} />
-            <Route path="/workouts" element={<Workouts />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/body/:part" element={<BodyPartWorkout />} />
-            <Route path="/diet-plan" element={<DietPlan />} />
-            <Route path="/body-selector" element={<BodySelector />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/growth" element={<GrowthStatus />} />
-            <Route path="/sleep" element={<SleepSchedule />} />
-            <Route path="/install" element={<Install />} />
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/" element={<RequireOnboarding><Index /></RequireOnboarding>} />
+            <Route path="/diet" element={<RequireOnboarding><DietTracker /></RequireOnboarding>} />
+            <Route path="/diet-insight" element={<RequireOnboarding><DietInsight /></RequireOnboarding>} />
+            <Route path="/workout" element={<RequireOnboarding><WorkoutTracker /></RequireOnboarding>} />
+            <Route path="/profile" element={<RequireOnboarding><Profile /></RequireOnboarding>} />
+            <Route path="/plans" element={<RequireOnboarding><Plans /></RequireOnboarding>} />
+            <Route path="/workouts" element={<RequireOnboarding><Workouts /></RequireOnboarding>} />
+            <Route path="/community" element={<RequireOnboarding><Community /></RequireOnboarding>} />
+            <Route path="/body/:part" element={<RequireOnboarding><BodyPartWorkout /></RequireOnboarding>} />
+            <Route path="/diet-plan" element={<RequireOnboarding><DietPlan /></RequireOnboarding>} />
+            <Route path="/body-selector" element={<RequireOnboarding><BodySelector /></RequireOnboarding>} />
+            <Route path="/settings" element={<RequireOnboarding><Settings /></RequireOnboarding>} />
+            <Route path="/growth" element={<RequireOnboarding><GrowthStatus /></RequireOnboarding>} />
+            <Route path="/sleep" element={<RequireOnboarding><SleepSchedule /></RequireOnboarding>} />
+            <Route path="/install" element={<RequireOnboarding><Install /></RequireOnboarding>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
