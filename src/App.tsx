@@ -18,6 +18,7 @@ import BodySelector from "./pages/BodySelector";
 import Settings from "./pages/Settings";
 import GrowthStatus from "./pages/GrowthStatus";
 import SleepSchedule from "./pages/SleepSchedule";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
