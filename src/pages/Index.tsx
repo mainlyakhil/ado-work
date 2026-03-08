@@ -155,7 +155,7 @@ const Index = () => {
             {currentAvatar.emoji}
           </button>
           <div>
-            <p className="text-sm font-bold">Hey, {currentAvatar.name}! 💪</p>
+            <p className="text-sm font-bold">Hey, {userName}! 💪</p>
             <p className="text-[10px] text-muted-foreground">Today's workout: 45 min</p>
           </div>
         </div>
