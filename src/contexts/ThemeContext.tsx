@@ -161,6 +161,28 @@ export const themes: Theme[] = [
     "--accent": "0 90% 40%", "--accent-foreground": "0 0% 100%",
     "--border": "0 15% 16%", "--input": "0 15% 16%", "--ring": "0 90% 40%",
   }),
+  makeTheme("ios-light", "iPhone Light", "📱", {
+    "--background": "0 0% 95%", "--foreground": "0 0% 10%",
+    "--card": "0 0% 100%", "--card-foreground": "0 0% 10%",
+    "--primary": "211 100% 50%", "--primary-foreground": "0 0% 100%",
+    "--secondary": "0 0% 93%", "--secondary-foreground": "0 0% 20%",
+    "--muted": "0 0% 90%", "--muted-foreground": "0 0% 45%",
+    "--accent": "211 100% 50%", "--accent-foreground": "0 0% 100%",
+    "--border": "0 0% 85%", "--input": "0 0% 88%", "--ring": "211 100% 50%",
+    "--destructive": "0 100% 59%", "--destructive-foreground": "0 0% 100%",
+    "--gym-green": "142 71% 45%", "--gym-gold": "43 96% 56%",
+  }),
+  makeTheme("ios-dark", "iPhone Dark", "🖤", {
+    "--background": "0 0% 0%", "--foreground": "0 0% 98%",
+    "--card": "0 0% 11%", "--card-foreground": "0 0% 98%",
+    "--primary": "211 100% 50%", "--primary-foreground": "0 0% 100%",
+    "--secondary": "0 0% 17%", "--secondary-foreground": "0 0% 95%",
+    "--muted": "0 0% 22%", "--muted-foreground": "0 0% 55%",
+    "--accent": "211 100% 50%", "--accent-foreground": "0 0% 100%",
+    "--border": "0 0% 22%", "--input": "0 0% 17%", "--ring": "211 100% 50%",
+    "--destructive": "0 100% 59%", "--destructive-foreground": "0 0% 100%",
+    "--gym-green": "142 71% 45%", "--gym-gold": "43 96% 56%",
+  }),
 ];
 
 interface ThemeContextType {
