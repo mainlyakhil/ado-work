@@ -2,7 +2,6 @@ import { ChevronLeft, Dumbbell, ChevronRight, Zap } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
-import bodyModelImg from "@/assets/body-model.png";
 
 const bodyParts = [
   { id: "chest", label: "Chest" }, { id: "shoulders", label: "Shoulders" },
@@ -57,6 +56,7 @@ const BodySelector = () => {
   const [expandedWorkout, setExpandedWorkout] = useState<string | null>(null);
   const [bouncingId, setBouncingId] = useState<string | null>(null);
   const [animatingPart, setAnimatingPart] = useState<string | null>(null);
+  const [hoveredPart, setHoveredPart] = useState<string | null>(null);
 
   const handlePartClick = (id: string) => {
     setAnimatingPart(id);
@@ -76,7 +76,6 @@ const BodySelector = () => {
     setTimeout(() => {
       setBouncingId(null);
       if (id === "none") { setStep("noequip"); } else {
-        // Map new parts to closest existing route
         const routeMap: Record<string, string> = {
           "lats": "back", "obliques": "core", "hip-flexors": "legs",
           "hamstrings": "legs", "rear-delts": "shoulders", "lower-back": "back",
@@ -97,133 +96,244 @@ const BodySelector = () => {
     ? noEquipWorkouts.filter(w => w.bodyPart === selectedPart || w.bodyPart === "full")
     : noEquipWorkouts;
 
-  const muscleClass = (part: string) => {
-    const isAnimating = animatingPart === part;
-    const isBouncing = bouncingId === part;
-    const isSelected = selectedPart === part;
-    if (isAnimating || isBouncing) return "fill-primary/60 muscle-select-glow";
-    if (isSelected) return "fill-primary/40 muscle-idle-glow";
-    return "fill-secondary/70 hover:fill-primary/25 muscle-idle-glow";
+  // SVG styling helpers
+  const partState = (id: string) => {
+    if (animatingPart === id || bouncingId === id) return "active";
+    if (selectedPart === id) return "selected";
+    if (hoveredPart === id) return "hovered";
+    return "idle";
   };
 
-  // Hotspot zones calibrated to the transparent body-model.png
-  const muscleZones: { id: string; label: string; top: string; left: string; width: string; height: string; borderRadius?: string }[] = [
-    // Head/Neck region (~0-16% height)
-    { id: "neck", label: "Neck", top: "13%", left: "38%", width: "24%", height: "3.5%", borderRadius: "50%" },
-    // Traps (slope from neck to shoulders ~16-20%)
-    { id: "traps", label: "Traps", top: "16.5%", left: "26%", width: "48%", height: "4%" },
-    // Shoulders (deltoid caps ~19-25%)
-    { id: "shoulders", label: "Shoulders", top: "19%", left: "12%", width: "20%", height: "7%", borderRadius: "50%" },
-    { id: "shoulders", label: "Shoulders", top: "19%", left: "68%", width: "20%", height: "7%", borderRadius: "50%" },
-    // Rear delts (behind shoulders)
-    { id: "rear-delts", label: "Rear Delts", top: "20%", left: "15%", width: "10%", height: "4%", borderRadius: "50%" },
-    { id: "rear-delts", label: "Rear Delts", top: "20%", left: "75%", width: "10%", height: "4%", borderRadius: "50%" },
-    // Chest (~24-31%)
-    { id: "chest", label: "Chest", top: "24%", left: "28%", width: "44%", height: "7%" },
-    // Back (behind chest)
-    { id: "back", label: "Back", top: "26%", left: "34%", width: "32%", height: "5%" },
-    // Upper arms / biceps (~25-35%)
-    { id: "arms", label: "Arms", top: "26%", left: "6%", width: "18%", height: "12%", borderRadius: "30%" },
-    { id: "arms", label: "Arms", top: "26%", left: "76%", width: "18%", height: "12%", borderRadius: "30%" },
-    // Lats (side torso ~28-38%)
-    { id: "lats", label: "Lats", top: "29%", left: "20%", width: "12%", height: "10%" },
-    { id: "lats", label: "Lats", top: "29%", left: "68%", width: "12%", height: "10%" },
-    // Core / Abs (~32-41%)
-    { id: "core", label: "Core", top: "32%", left: "34%", width: "32%", height: "10%" },
-    // Obliques (flanking abs)
-    { id: "obliques", label: "Obliques", top: "33%", left: "24%", width: "12%", height: "8%", borderRadius: "40%" },
-    { id: "obliques", label: "Obliques", top: "33%", left: "64%", width: "12%", height: "8%", borderRadius: "40%" },
-    // Forearms (~37-47%)
-    { id: "forearms", label: "Forearms", top: "38%", left: "2%", width: "16%", height: "11%", borderRadius: "30%" },
-    { id: "forearms", label: "Forearms", top: "38%", left: "82%", width: "16%", height: "11%", borderRadius: "30%" },
-    // Lower back (~40-44%)
-    { id: "lower-back", label: "Lower Back", top: "41%", left: "34%", width: "32%", height: "4%" },
-    // Hip flexors (~44-48%)
-    { id: "hip-flexors", label: "Hip Flexors", top: "44%", left: "28%", width: "16%", height: "5%", borderRadius: "50%" },
-    { id: "hip-flexors", label: "Hip Flexors", top: "44%", left: "56%", width: "16%", height: "5%", borderRadius: "50%" },
-    // Glutes (~46-50%)
-    { id: "glutes", label: "Glutes", top: "46%", left: "30%", width: "40%", height: "5%" },
-    // Quads (~50-66%)
-    { id: "legs", label: "Quads", top: "51%", left: "22%", width: "24%", height: "16%" },
-    { id: "legs", label: "Quads", top: "51%", left: "54%", width: "24%", height: "16%" },
-    // Hamstrings (behind quads)
-    { id: "hamstrings", label: "Hamstrings", top: "54%", left: "20%", width: "14%", height: "12%" },
-    { id: "hamstrings", label: "Hamstrings", top: "54%", left: "66%", width: "14%", height: "12%" },
-    // Calves (~70-84%)
-    { id: "calves", label: "Calves", top: "70%", left: "22%", width: "20%", height: "14%" },
-    { id: "calves", label: "Calves", top: "70%", left: "58%", width: "20%", height: "14%" },
+  const fillFor = (id: string) => {
+    const s = partState(id);
+    if (s === "active") return "hsl(var(--primary) / 0.6)";
+    if (s === "selected") return "hsl(var(--primary) / 0.35)";
+    if (s === "hovered") return "hsl(var(--primary) / 0.2)";
+    return "hsl(var(--muted) / 0.5)";
+  };
+
+  const strokeFor = (id: string) => {
+    const s = partState(id);
+    if (s === "active") return "hsl(var(--primary))";
+    if (s === "selected") return "hsl(var(--primary) / 0.8)";
+    if (s === "hovered") return "hsl(var(--primary) / 0.6)";
+    return "hsl(var(--primary) / 0.2)";
+  };
+
+  const strokeW = (id: string) => {
+    const s = partState(id);
+    return s === "active" ? 2.5 : s === "selected" ? 2 : s === "hovered" ? 1.5 : 0.8;
+  };
+
+  const scaleFor = (id: string) => {
+    const s = partState(id);
+    return s === "active" ? "scale(1.06)" : s === "selected" ? "scale(1.03)" : "scale(1)";
+  };
+
+  const glowFilter = (id: string) => {
+    const s = partState(id);
+    if (s === "active") return "drop-shadow(0 0 8px hsl(var(--primary) / 0.7))";
+    if (s === "selected") return "drop-shadow(0 0 5px hsl(var(--primary) / 0.4))";
+    return "none";
+  };
+
+  const partProps = (id: string) => ({
+    onClick: () => handlePartClick(id),
+    onMouseEnter: () => setHoveredPart(id),
+    onMouseLeave: () => setHoveredPart(null),
+    style: {
+      cursor: "pointer",
+      fill: fillFor(id),
+      stroke: strokeFor(id),
+      strokeWidth: strokeW(id),
+      transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      transform: scaleFor(id),
+      transformOrigin: "center",
+      filter: glowFilter(id),
+    } as React.CSSProperties,
+  });
+
+  // Label line data: from body part center to label position
+  const labelData: { id: string; label: string; cx: number; cy: number; lx: number; ly: number; align: "left" | "right" }[] = [
+    { id: "neck", label: "Neck", cx: 100, cy: 58, lx: 160, ly: 50, align: "right" },
+    { id: "traps", label: "Traps", cx: 100, cy: 72, lx: 160, ly: 68, align: "right" },
+    { id: "shoulders", label: "Shoulders", cx: 60, cy: 88, lx: 10, ly: 80, align: "left" },
+    { id: "chest", label: "Chest", cx: 100, cy: 102, lx: 160, ly: 100, align: "right" },
+    { id: "arms", label: "Arms", cx: 44, cy: 118, lx: 4, ly: 114, align: "left" },
+    { id: "back", label: "Back", cx: 100, cy: 110, lx: 160, ly: 118, align: "right" },
+    { id: "lats", label: "Lats", cx: 72, cy: 118, lx: 10, ly: 132, align: "left" },
+    { id: "core", label: "Core", cx: 100, cy: 140, lx: 160, ly: 138, align: "right" },
+    { id: "obliques", label: "Obliques", cx: 78, cy: 138, lx: 10, ly: 150, align: "left" },
+    { id: "forearms", label: "Forearms", cx: 40, cy: 154, lx: 4, ly: 168, align: "left" },
+    { id: "lower-back", label: "Lower Back", cx: 100, cy: 158, lx: 160, ly: 156, align: "right" },
+    { id: "hip-flexors", label: "Hip Flexors", cx: 90, cy: 178, lx: 10, ly: 182, align: "left" },
+    { id: "glutes", label: "Glutes", cx: 100, cy: 192, lx: 160, ly: 176, align: "right" },
+    { id: "legs", label: "Quads", cx: 86, cy: 230, lx: 10, ly: 224, align: "left" },
+    { id: "hamstrings", label: "Hamstrings", cx: 114, cy: 230, lx: 170, ly: 218, align: "right" },
+    { id: "calves", label: "Calves", cx: 84, cy: 298, lx: 10, ly: 296, align: "left" },
+    { id: "rear-delts", label: "Rear Delts", cx: 140, cy: 88, lx: 170, ly: 86, align: "right" },
   ];
 
-  const getZoneStyle = (zone: typeof muscleZones[0]) => {
-    const isActive = animatingPart === zone.id || bouncingId === zone.id;
-    const isSelected = selectedPart === zone.id;
-    return {
-      position: "absolute" as const,
-      top: zone.top,
-      left: zone.left,
-      width: zone.width,
-      height: zone.height,
-      borderRadius: zone.borderRadius || "10px",
-      cursor: "pointer",
-      transition: "all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-      background: isActive
-        ? "radial-gradient(ellipse, hsl(var(--primary) / 0.55) 0%, hsl(var(--primary) / 0.1) 80%, transparent 100%)"
-        : isSelected
-        ? "radial-gradient(ellipse, hsl(var(--primary) / 0.3) 0%, hsl(var(--primary) / 0.05) 80%, transparent 100%)"
-        : "transparent",
-      boxShadow: isActive
-        ? "0 0 28px 10px hsl(var(--primary) / 0.45), inset 0 0 14px hsl(var(--primary) / 0.25)"
-        : isSelected
-        ? "0 0 18px 5px hsl(var(--primary) / 0.2)"
-        : "none",
-      transform: isActive ? "scale(1.12)" : isSelected ? "scale(1.04)" : "scale(1)",
-      border: isActive
-        ? "1.5px solid hsl(var(--primary) / 0.6)"
-        : isSelected
-        ? "1px solid hsl(var(--primary) / 0.25)"
-        : "1px solid transparent",
-    };
-  };
+  const activeLabel = labelData.find(l => l.id === (hoveredPart || selectedPart || animatingPart));
 
   const BodyModel = () => (
-    <div className="relative w-full h-full flex items-center justify-center">
-      {/* Soft ambient aura */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: "radial-gradient(ellipse at 50% 45%, hsl(var(--primary) / 0.06) 0%, transparent 65%)",
-        }}
-      />
-      {/* Body image */}
-      <img
-        src={bodyModelImg}
-        alt="Human body muscle map"
-        className="w-full h-full object-contain relative z-10"
-        draggable={false}
-        style={{
-          userSelect: "none",
-          filter: "drop-shadow(0 0 20px hsl(var(--primary) / 0.15)) drop-shadow(0 0 60px hsl(var(--primary) / 0.08))",
-        }}
-      />
-      {/* Interactive hotspot overlays */}
-      <div className="absolute inset-0 z-20">
-        {muscleZones.map((zone, i) => (
-          <div
-            key={`${zone.id}-${i}`}
-            style={getZoneStyle(zone)}
-            onClick={() => handlePartClick(zone.id)}
+    <svg viewBox="0 0 200 370" className="w-full h-full">
+      <defs>
+        <radialGradient id="bodyAura" cx="50%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+        </radialGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+
+      {/* Ambient background aura */}
+      <ellipse cx="100" cy="180" rx="90" ry="170" fill="url(#bodyAura)" />
+
+      {/* === WIREFRAME BODY STRUCTURE === */}
+
+      {/* Head */}
+      <ellipse cx="100" cy="28" rx="14" ry="18" fill="none" stroke="hsl(var(--primary) / 0.25)" strokeWidth="1.2">
+        <animate attributeName="ry" values="18;18.5;18" dur="3s" repeatCount="indefinite" />
+      </ellipse>
+      {/* Face lines */}
+      <line x1="95" y1="24" x2="95" y2="26" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.8" />
+      <line x1="105" y1="24" x2="105" y2="26" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.8" />
+      <path d="M96 32 Q100 35 104 32" fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6" />
+
+      {/* Neck */}
+      <rect x="91" y="46" width="18" height="14" rx="4" {...partProps("neck")} />
+
+      {/* Traps */}
+      <path d="M76 66 L91 54 L100 52 L109 54 L124 66 L120 76 L80 76 Z" {...partProps("traps")} />
+
+      {/* Shoulders */}
+      <ellipse cx="60" cy="82" rx="20" ry="13" {...partProps("shoulders")} />
+      <ellipse cx="140" cy="82" rx="20" ry="13" {...partProps("shoulders")} />
+
+      {/* Rear Delts - arcs */}
+      <path d="M42 78 Q50 70 58 78" fill="none" {...partProps("rear-delts")} />
+      <path d="M142 78 Q150 70 158 78" fill="none" {...partProps("rear-delts")} />
+
+      {/* Chest - two pec slabs */}
+      <path d="M80 82 L98 82 L96 112 Q88 118 80 108 Z" {...partProps("chest")} />
+      <path d="M102 82 L120 82 L120 108 Q112 118 104 112 Z" {...partProps("chest")} />
+      {/* Chest separation line */}
+      <line x1="100" y1="82" x2="100" y2="115" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.5" />
+
+      {/* Back - invisible hitbox */}
+      <rect x="82" y="84" width="36" height="26" rx="4" opacity="0" {...partProps("back")} />
+
+      {/* Lats */}
+      <path d="M72 92 L80 92 L80 142 L76 154 L70 140 Z" {...partProps("lats")} />
+      <path d="M120 92 L128 92 L130 140 L124 154 L120 142 Z" {...partProps("lats")} />
+
+      {/* Arms / Biceps */}
+      <path d="M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z" {...partProps("arms")}>
+        <animate attributeName="d" values="M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z;M42 89 Q35 105 35 119 Q37 133 43 137 L53 137 Q57 127 55 113 Q53 101 49 89 Z;M42 90 Q36 106 36 120 Q38 134 44 138 L54 138 Q58 128 56 114 Q54 102 50 90 Z" dur="4s" repeatCount="indefinite" />
+      </path>
+      <path d="M150 90 Q156 106 156 120 Q154 134 148 138 L138 138 Q134 128 136 114 Q138 102 142 90 Z" {...partProps("arms")}>
+        <animate attributeName="d" values="M150 90 Q156 106 156 120 Q154 134 148 138 L138 138 Q134 128 136 114 Q138 102 142 90 Z;M151 89 Q157 105 157 119 Q155 133 149 137 L139 137 Q135 127 137 113 Q139 101 143 89 Z;M150 90 Q156 106 156 120 Q154 134 148 138 L138 138 Q134 128 136 114 Q138 102 142 90 Z" dur="4s" repeatCount="indefinite" />
+      </path>
+
+      {/* Forearms */}
+      <path d="M44 142 Q40 160 38 178 L50 178 Q52 164 52 146 Z" {...partProps("forearms")} />
+      <path d="M148 142 Q152 160 154 178 L142 178 Q140 164 140 146 Z" {...partProps("forearms")} />
+
+      {/* Hands */}
+      <ellipse cx="44" cy="186" rx="7" ry="8" fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6" />
+      <ellipse cx="148" cy="186" rx="7" ry="8" fill="none" stroke="hsl(var(--primary) / 0.15)" strokeWidth="0.6" />
+
+      {/* Core / Abs */}
+      <rect x="86" y="118" width="28" height="42" rx="4" {...partProps("core")} />
+      {/* Ab grid */}
+      <line x1="100" y1="120" x2="100" y2="158" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.5" />
+      <line x1="88" y1="130" x2="112" y2="130" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
+      <line x1="88" y1="140" x2="112" y2="140" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
+      <line x1="88" y1="150" x2="112" y2="150" stroke="hsl(var(--primary) / 0.1)" strokeWidth="0.4" />
+
+      {/* Obliques */}
+      <path d="M78 118 L86 118 L84 162 L76 150 Z" {...partProps("obliques")} />
+      <path d="M114 118 L122 118 L124 150 L116 162 Z" {...partProps("obliques")} />
+
+      {/* Lower Back */}
+      <rect x="88" y="152" width="24" height="14" rx="3" {...partProps("lower-back")} />
+
+      {/* Hip Flexors */}
+      <ellipse cx="88" cy="176" rx="9" ry="7" {...partProps("hip-flexors")} />
+      <ellipse cx="112" cy="176" rx="9" ry="7" {...partProps("hip-flexors")} />
+
+      {/* Glutes */}
+      <ellipse cx="90" cy="192" rx="15" ry="12" {...partProps("glutes")} />
+      <ellipse cx="110" cy="192" rx="15" ry="12" {...partProps("glutes")} />
+
+      {/* Quads */}
+      <path d="M74 204 Q72 234 72 262 L92 262 Q94 244 94 224 Q92 212 88 204 Z" {...partProps("legs")}>
+        <animate attributeName="d" values="M74 204 Q72 234 72 262 L92 262 Q94 244 94 224 Q92 212 88 204 Z;M74 203 Q71 233 71 261 L91 261 Q93 243 93 223 Q91 211 87 203 Z;M74 204 Q72 234 72 262 L92 262 Q94 244 94 224 Q92 212 88 204 Z" dur="5s" repeatCount="indefinite" />
+      </path>
+      <path d="M112 204 Q108 234 108 262 L128 262 Q130 244 130 224 Q128 212 126 204 Z" {...partProps("legs")}>
+        <animate attributeName="d" values="M112 204 Q108 234 108 262 L128 262 Q130 244 130 224 Q128 212 126 204 Z;M112 203 Q107 233 107 261 L127 261 Q129 243 129 223 Q127 211 125 203 Z;M112 204 Q108 234 108 262 L128 262 Q130 244 130 224 Q128 212 126 204 Z" dur="5s" repeatCount="indefinite" />
+      </path>
+      {/* Quad separation lines */}
+      <line x1="82" y1="212" x2="82" y2="258" stroke="hsl(var(--primary) / 0.08)" strokeWidth="0.4" />
+      <line x1="118" y1="212" x2="118" y2="258" stroke="hsl(var(--primary) / 0.08)" strokeWidth="0.4" />
+
+      {/* Hamstrings */}
+      <path d="M74 206 L72 204 L70 244 L74 258 L78 244 Z" {...partProps("hamstrings")} />
+      <path d="M126 206 L128 204 L130 244 L126 258 L122 244 Z" {...partProps("hamstrings")} />
+
+      {/* Calves */}
+      <path d="M74 266 Q72 284 72 304 Q74 322 82 326 L92 326 Q96 316 94 296 Q92 278 90 266 Z" {...partProps("calves")}>
+        <animate attributeName="d" values="M74 266 Q72 284 72 304 Q74 322 82 326 L92 326 Q96 316 94 296 Q92 278 90 266 Z;M74 265 Q71 283 71 303 Q73 321 81 325 L91 325 Q95 315 93 295 Q91 277 89 265 Z;M74 266 Q72 284 72 304 Q74 322 82 326 L92 326 Q96 316 94 296 Q92 278 90 266 Z" dur="4.5s" repeatCount="indefinite" />
+      </path>
+      <path d="M110 266 Q108 284 108 304 Q110 322 118 326 L128 326 Q132 316 130 296 Q128 278 126 266 Z" {...partProps("calves")}>
+        <animate attributeName="d" values="M110 266 Q108 284 108 304 Q110 322 118 326 L128 326 Q132 316 130 296 Q128 278 126 266 Z;M110 265 Q107 283 107 303 Q109 321 117 325 L127 325 Q131 315 129 295 Q127 277 125 265 Z;M110 266 Q108 284 108 304 Q110 322 118 326 L128 326 Q132 316 130 296 Q128 278 126 266 Z" dur="4.5s" repeatCount="indefinite" />
+      </path>
+
+      {/* Feet */}
+      <ellipse cx="82" cy="336" rx="12" ry="5" fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6" />
+      <ellipse cx="118" cy="336" rx="12" ry="5" fill="none" stroke="hsl(var(--primary) / 0.12)" strokeWidth="0.6" />
+
+      {/* === LABEL LINE + TEXT for active/hovered/selected part === */}
+      {activeLabel && (
+        <g className="animate-fade-in" style={{ transition: "all 0.3s ease" }}>
+          {/* Connector line */}
+          <line
+            x1={activeLabel.cx} y1={activeLabel.cy}
+            x2={activeLabel.lx} y2={activeLabel.ly}
+            stroke="hsl(var(--primary))" strokeWidth="1" strokeDasharray="3,2" opacity="0.7"
+          >
+            <animate attributeName="stroke-dashoffset" from="0" to="10" dur="1s" repeatCount="indefinite" />
+          </line>
+          {/* Dot at muscle */}
+          <circle cx={activeLabel.cx} cy={activeLabel.cy} r="3" fill="hsl(var(--primary))" opacity="0.9">
+            <animate attributeName="r" values="3;4;3" dur="1.2s" repeatCount="indefinite" />
+          </circle>
+          {/* Label background */}
+          <rect
+            x={activeLabel.align === "left" ? activeLabel.lx - 4 : activeLabel.lx - 2}
+            y={activeLabel.ly - 8}
+            width={activeLabel.label.length * 6.5 + 10}
+            height="16" rx="4"
+            fill="hsl(var(--primary))" opacity="0.9"
           />
-        ))}
-      </div>
-      {/* Floating selected label */}
-      {selectedPart && (
-        <div className="absolute z-30 left-1/2 -translate-x-1/2 bottom-4 rounded-full bg-primary px-5 py-2 text-xs font-bold text-primary-foreground animate-scale-in"
-          style={{ boxShadow: "0 0 24px hsl(var(--primary) / 0.5), 0 4px 12px hsl(0 0% 0% / 0.3)" }}
-        >
-          {bodyParts.find(b => b.id === selectedPart)?.label} ✓
-        </div>
+          {/* Label text */}
+          <text
+            x={activeLabel.align === "left" ? activeLabel.lx + 1 : activeLabel.lx + 3}
+            y={activeLabel.ly + 3}
+            fill="hsl(var(--primary-foreground))"
+            fontSize="8" fontWeight="700" fontFamily="Inter, sans-serif"
+          >
+            {activeLabel.label}
+          </text>
+        </g>
       )}
-    </div>
+
+      {/* Subtle breathing animation on the whole body */}
+      <animateTransform attributeName="transform" type="scale" values="1,1;1.003,1.005;1,1" dur="3s" repeatCount="indefinite" additive="sum" />
+    </svg>
   );
 
   return (
@@ -243,7 +353,7 @@ const BodySelector = () => {
         {step === "body" && (
           <div className="mt-4 animate-fade-in">
             <p className="text-center text-xs text-muted-foreground mb-2">Tap a muscle group to target</p>
-            <div className="relative mx-auto pose-flex" style={{ maxWidth: 280, height: 480 }}>
+            <div className="relative mx-auto" style={{ maxWidth: 300, height: 440 }}>
               <BodyModel />
             </div>
 
