@@ -1,4 +1,4 @@
-import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2, TrendingUp, Settings, UserCircle } from "lucide-react";
+import { Dumbbell, UtensilsCrossed, ArrowRight, ChevronRight, Flame, Target, Bell, X, Plus, Trash2, TrendingUp, Settings, UserCircle, Clock, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MobileLayout from "@/components/MobileLayout";
@@ -41,6 +41,31 @@ const animalAvatars = [
   { id: "hawk", emoji: "🦅", name: "Night Hawk" },
 ];
 
+interface WorkoutHistoryEntry {
+  id: string;
+  name: string;
+  date: string;
+  duration: string;
+  calories: number;
+  bodyPart: string;
+}
+
+const defaultWorkoutHistory: WorkoutHistoryEntry[] = [
+  { id: "1", name: "Upper Body Blast", date: "Today", duration: "35 min", calories: 280, bodyPart: "💪" },
+  { id: "2", name: "Core Destroyer", date: "Yesterday", duration: "20 min", calories: 180, bodyPart: "🔥" },
+  { id: "3", name: "Leg Day Crusher", date: "2 days ago", duration: "40 min", calories: 350, bodyPart: "🦵" },
+  { id: "4", name: "Cardio HIIT", date: "3 days ago", duration: "25 min", calories: 400, bodyPart: "🏃" },
+  { id: "5", name: "Morning Stretch", date: "4 days ago", duration: "15 min", calories: 80, bodyPart: "🧘" },
+];
+
+const defaultReminders: Reminder[] = [
+  { id: "1", label: "Morning Workout", time: "07:00", enabled: true },
+  { id: "2", label: "Protein Shake", time: "08:00", enabled: false },
+  { id: "3", label: "Stretch Break", time: "12:00", enabled: true },
+  { id: "4", label: "Evening Run", time: "18:00", enabled: false },
+  { id: "5", label: "Hydration Check", time: "10:00", enabled: true },
+];
+
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -50,13 +75,14 @@ const Index = () => {
   const [bouncingId, setBouncingId] = useState<string | null>(null);
   const [reminders, setReminders] = useState<Reminder[]>(() => {
     const saved = localStorage.getItem("ado-reminders");
-    return saved ? JSON.parse(saved) : [
-      { id: "1", label: "Morning Workout", time: "07:00", enabled: true },
-      { id: "2", label: "Protein Shake", time: "08:00", enabled: false },
-    ];
+    return saved ? JSON.parse(saved) : defaultReminders;
   });
   const [newLabel, setNewLabel] = useState("");
   const [newTime, setNewTime] = useState("09:00");
+  const [workoutHistory] = useState<WorkoutHistoryEntry[]>(() => {
+    const saved = localStorage.getItem("ado-workout-history");
+    return saved ? JSON.parse(saved) : defaultWorkoutHistory;
+  });
 
   useEffect(() => { localStorage.setItem("ado-reminders", JSON.stringify(reminders)); }, [reminders]);
 
@@ -147,7 +173,7 @@ const Index = () => {
           </button>
         </div>
 
-        {/* Select My Work - Body Model */}
+        {/* Select My Work */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold">Select My Work</h2>
@@ -157,23 +183,22 @@ const Index = () => {
           </div>
           <button onClick={() => navigate("/body-selector")} className="w-full gym-gradient-card rounded-2xl p-4 transition-transform active:scale-[0.98]">
             <div className="flex items-center gap-4">
-              {/* Mini Body SVG */}
-              <svg viewBox="0 0 80 140" className="h-24 w-16 shrink-0">
-                <ellipse cx="40" cy="12" rx="8" ry="10" className="fill-primary/30 stroke-primary/50" strokeWidth="1" />
-                <rect x="30" y="22" width="20" height="40" rx="5" className="fill-primary/20 stroke-primary/50" strokeWidth="1" />
-                <rect x="15" y="26" width="10" height="30" rx="4" className="fill-primary/15 stroke-primary/40" strokeWidth="1" />
-                <rect x="55" y="26" width="10" height="30" rx="4" className="fill-primary/15 stroke-primary/40" strokeWidth="1" />
-                <rect x="30" y="64" width="10" height="35" rx="4" className="fill-primary/15 stroke-primary/40" strokeWidth="1" />
-                <rect x="42" y="64" width="10" height="35" rx="4" className="fill-primary/15 stroke-primary/40" strokeWidth="1" />
+              <svg viewBox="0 0 80 140" className="h-24 w-16 shrink-0 body-glow">
+                <ellipse cx="40" cy="12" rx="8" ry="10" className="fill-primary/30 stroke-primary/50 muscle-breathe" strokeWidth="1" />
+                <rect x="30" y="22" width="20" height="40" rx="5" className="fill-primary/20 stroke-primary/50 body-pulse" strokeWidth="1" />
+                <rect x="15" y="26" width="10" height="30" rx="4" className="fill-primary/15 stroke-primary/40 body-pulse" strokeWidth="1" style={{ animationDelay: "0.5s" }} />
+                <rect x="55" y="26" width="10" height="30" rx="4" className="fill-primary/15 stroke-primary/40 body-pulse" strokeWidth="1" style={{ animationDelay: "0.7s" }} />
+                <rect x="30" y="64" width="10" height="35" rx="4" className="fill-primary/15 stroke-primary/40 body-pulse" strokeWidth="1" style={{ animationDelay: "0.3s" }} />
+                <rect x="42" y="64" width="10" height="35" rx="4" className="fill-primary/15 stroke-primary/40 body-pulse" strokeWidth="1" style={{ animationDelay: "0.6s" }} />
                 <ellipse cx="35" cy="103" rx="6" ry="3" className="fill-primary/10 stroke-primary/30" strokeWidth="0.5" />
                 <ellipse cx="47" cy="103" rx="6" ry="3" className="fill-primary/10 stroke-primary/30" strokeWidth="0.5" />
               </svg>
               <div className="flex-1">
                 <p className="text-sm font-bold">Tap to select body part</p>
-                <p className="text-[10px] text-muted-foreground mt-1">Interactive human body model with equipment selection & bodyweight workouts</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Interactive body model with equipment selection</p>
                 <div className="mt-2 flex items-center gap-1">
                   <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">11 body parts</span>
-                  <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">8 equipment types</span>
+                  <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-bold text-primary">8 equipment</span>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -186,9 +211,7 @@ const Index = () => {
           <h2 className="mb-3 text-sm font-bold">Target Body Part</h2>
           <div className="grid grid-cols-4 gap-2">
             {bodyParts.map(part => (
-              <button
-                key={part.id}
-                onClick={() => handleBodyPartClick(part.id)}
+              <button key={part.id} onClick={() => handleBodyPartClick(part.id)}
                 className={`gym-gradient-card flex flex-col items-center gap-1.5 rounded-2xl p-2.5 transition-all ${
                   bouncingId === part.id ? "animate-bounce scale-110" : "active:scale-95"
                 }`}
@@ -196,6 +219,34 @@ const Index = () => {
                 <span className="text-xl">{part.emoji}</span>
                 <span className="text-[9px] font-semibold">{part.label}</span>
               </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Workout History */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold">Workout History</h2>
+            <button onClick={() => navigate("/workout")} className="text-[10px] font-semibold text-primary flex items-center gap-1">
+              View All <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+          <div className="space-y-2">
+            {workoutHistory.slice(0, 4).map(entry => (
+              <div key={entry.id} className="flex items-center gap-3 gym-gradient-card rounded-2xl p-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-xl">{entry.bodyPart}</div>
+                <div className="flex-1">
+                  <p className="text-xs font-bold">{entry.name}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[9px] text-muted-foreground flex items-center gap-0.5"><Clock className="h-2.5 w-2.5" />{entry.duration}</span>
+                    <span className="text-[9px] text-muted-foreground flex items-center gap-0.5"><Flame className="h-2.5 w-2.5" />{entry.calories} cal</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] text-muted-foreground">{entry.date}</p>
+                  <CheckCircle className="h-3.5 w-3.5 text-primary mt-0.5 ml-auto" />
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -305,9 +356,7 @@ const Index = () => {
             <p className="mt-1 text-[10px] text-muted-foreground">Pick your spirit animal 🔥</p>
             <div className="mt-4 grid grid-cols-4 gap-3">
               {animalAvatars.map(avatar => (
-                <button
-                  key={avatar.id}
-                  onClick={() => handleAvatarSelect(avatar.id)}
+                <button key={avatar.id} onClick={() => handleAvatarSelect(avatar.id)}
                   className={`flex flex-col items-center gap-1 rounded-2xl p-3 transition-all duration-300 ${
                     bouncingId === avatar.id ? "animate-bounce scale-110" : ""
                   } ${selectedAvatar === avatar.id ? "ring-2 ring-primary bg-primary/10 scale-105" : "gym-gradient-card active:scale-90 hover:scale-105"}`}

@@ -1,20 +1,15 @@
-import { ChevronLeft, Dumbbell, X, ChevronRight, Zap } from "lucide-react";
+import { ChevronLeft, Dumbbell, ChevronRight, Zap } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MobileLayout from "@/components/MobileLayout";
 
 const bodyParts = [
-  { id: "chest", label: "Chest", x: 50, y: 28, w: 20, h: 8 },
-  { id: "shoulders", label: "Shoulders", x: 50, y: 22, w: 30, h: 5 },
-  { id: "arms", label: "Arms", x: 22, y: 34, w: 10, h: 14 },
-  { id: "forearms", label: "Forearms", x: 18, y: 46, w: 8, h: 10 },
-  { id: "back", label: "Back", x: 50, y: 35, w: 18, h: 10 },
-  { id: "core", label: "Core", x: 50, y: 42, w: 14, h: 8 },
-  { id: "glutes", label: "Glutes", x: 50, y: 52, w: 16, h: 6 },
-  { id: "legs", label: "Legs", x: 42, y: 64, w: 10, h: 18 },
-  { id: "calves", label: "Calves", x: 42, y: 80, w: 8, h: 10 },
-  { id: "neck", label: "Neck", x: 50, y: 17, w: 8, h: 4 },
-  { id: "traps", label: "Traps", x: 50, y: 20, w: 14, h: 4 },
+  { id: "chest", label: "Chest" }, { id: "shoulders", label: "Shoulders" },
+  { id: "arms", label: "Arms" }, { id: "forearms", label: "Forearms" },
+  { id: "back", label: "Back" }, { id: "core", label: "Core" },
+  { id: "glutes", label: "Glutes" }, { id: "legs", label: "Legs" },
+  { id: "calves", label: "Calves" }, { id: "neck", label: "Neck" },
+  { id: "traps", label: "Traps" },
 ];
 
 const equipmentList = [
@@ -29,15 +24,8 @@ const equipmentList = [
 ];
 
 interface NoEquipWorkout {
-  id: string;
-  name: string;
-  bodyPart: string;
-  duration: string;
-  reps: string;
-  color: string;
-  emoji: string;
-  description: string;
-  steps: string[];
+  id: string; name: string; bodyPart: string; duration: string; reps: string;
+  color: string; emoji: string; description: string; steps: string[];
 }
 
 const noEquipWorkouts: NoEquipWorkout[] = [
@@ -59,39 +47,26 @@ const BodySelector = () => {
   const navigate = useNavigate();
   const [selectedPart, setSelectedPart] = useState<string | null>(null);
   const [step, setStep] = useState<"body" | "equipment" | "noequip">("body");
-  const [selectedEquipment, setSelectedEquipment] = useState<string | null>(null);
   const [expandedWorkout, setExpandedWorkout] = useState<string | null>(null);
   const [bouncingId, setBouncingId] = useState<string | null>(null);
 
   const handlePartClick = (id: string) => {
     setBouncingId(id);
-    setTimeout(() => {
-      setSelectedPart(id);
-      setBouncingId(null);
-      setStep("equipment");
-    }, 300);
+    setTimeout(() => { setSelectedPart(id); setBouncingId(null); setStep("equipment"); }, 300);
   };
 
   const handleEquipmentClick = (id: string) => {
     setBouncingId(id);
     setTimeout(() => {
-      setSelectedEquipment(id);
       setBouncingId(null);
-      if (id === "none") {
-        setStep("noequip");
-      } else {
-        navigate(`/body/${selectedPart}`);
-      }
+      if (id === "none") { setStep("noequip"); } else { navigate(`/body/${selectedPart}`); }
     }, 300);
   };
 
   const suggestedEquip = selectedPart
-    ? selectedPart === "legs" || selectedPart === "glutes"
-      ? ["none", "barbell", "bands", "kettlebell"]
-      : selectedPart === "back"
-        ? ["pullup-bar", "dumbbells", "barbell", "cables"]
-        : selectedPart === "chest"
-          ? ["none", "dumbbells", "barbell", "cables"]
+    ? selectedPart === "legs" || selectedPart === "glutes" ? ["none", "barbell", "bands", "kettlebell"]
+      : selectedPart === "back" ? ["pullup-bar", "dumbbells", "barbell", "cables"]
+        : selectedPart === "chest" ? ["none", "dumbbells", "barbell", "cables"]
           : ["none", "dumbbells", "bands", "kettlebell"]
     : [];
 
@@ -112,80 +87,81 @@ const BodySelector = () => {
           <div className="w-6" />
         </div>
 
-        {/* STEP 1: Body Model */}
+        {/* STEP 1: Animated Body Model */}
         {step === "body" && (
           <div className="mt-4 animate-fade-in">
             <p className="text-center text-xs text-muted-foreground mb-3">Tap a muscle group to target</p>
+            <div className="relative mx-auto body-glow" style={{ width: 260, height: 360 }}>
+              <svg viewBox="0 0 260 360" className="w-full h-full">
+                {/* Ambient glow behind body */}
+                <defs>
+                  <radialGradient id="bodyAura" cx="50%" cy="45%" r="45%">
+                    <stop offset="0%" className="[stop-color:hsl(var(--primary))]" stopOpacity="0.08" />
+                    <stop offset="100%" className="[stop-color:hsl(var(--primary))]" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+                <ellipse cx="130" cy="170" rx="110" ry="160" fill="url(#bodyAura)" />
 
-            {/* Human Body SVG */}
-            <div className="relative mx-auto" style={{ width: 260, height: 420 }}>
-              <svg viewBox="0 0 260 420" className="w-full h-full">
                 {/* Head */}
-                <ellipse cx="130" cy="32" rx="22" ry="26" className="fill-secondary stroke-primary/30" strokeWidth="1.5" />
+                <ellipse cx="130" cy="30" rx="20" ry="24" className="fill-secondary stroke-primary/30 muscle-breathe" strokeWidth="1.5" />
                 {/* Neck */}
-                <rect x="120" y="56" width="20" height="16" rx="4" className="fill-secondary stroke-primary/30" strokeWidth="1" />
-                {/* Torso */}
-                <path d="M90 72 L170 72 L175 180 L85 180 Z" rx="8" className="fill-secondary stroke-primary/30" strokeWidth="1.5" />
-                {/* Shoulders */}
-                <ellipse cx="80" cy="82" rx="18" ry="12" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "shoulders" || bouncingId === "shoulders" ? "fill-primary/40 scale-110" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("shoulders")} />
-                <ellipse cx="180" cy="82" rx="18" ry="12" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "shoulders" || bouncingId === "shoulders" ? "fill-primary/40 scale-110" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("shoulders")} />
-                {/* Chest */}
-                <path d="M98 85 L162 85 L158 120 L102 120 Z" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "chest" || bouncingId === "chest" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("chest")} />
-                {/* Neck hitbox */}
-                <rect x="115" y="56" width="30" height="18" className="fill-transparent cursor-pointer" onClick={() => handlePartClick("neck")} />
+                <rect x="121" y="52" width="18" height="14" rx="4" className="fill-secondary stroke-primary/30" strokeWidth="1" onClick={() => handlePartClick("neck")} style={{ cursor: "pointer" }} />
                 {/* Traps */}
-                <path d="M100 72 L130 60 L160 72 L155 82 L105 82 Z" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "traps" || bouncingId === "traps" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1" onClick={() => handlePartClick("traps")} />
-                {/* Core / Abs */}
-                <rect x="108" y="122" width="44" height="40" rx="6" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "core" || bouncingId === "core" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("core")} />
+                <path d="M102 66 L130 56 L158 66 L155 76 L105 76 Z" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "traps" || bouncingId === "traps" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1" onClick={() => handlePartClick("traps")} />
+                {/* Torso */}
+                <path d="M92 66 L168 66 L173 175 L87 175 Z" className="fill-secondary stroke-primary/30" strokeWidth="1.5" />
+                {/* Shoulders */}
+                <ellipse cx="82" cy="76" rx="17" ry="11" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "shoulders" || bouncingId === "shoulders" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("shoulders")} style={{ animationDelay: "0.2s" }} />
+                <ellipse cx="178" cy="76" rx="17" ry="11" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "shoulders" || bouncingId === "shoulders" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("shoulders")} style={{ animationDelay: "0.4s" }} />
+                {/* Chest */}
+                <path d="M100 80 L160 80 L157 112 L103 112 Z" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "chest" || bouncingId === "chest" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("chest")} style={{ animationDelay: "0.1s" }} />
+                {/* Core */}
+                <rect x="110" y="114" width="40" height="38" rx="6" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "core" || bouncingId === "core" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("core")} style={{ animationDelay: "0.3s" }} />
                 {/* Arms */}
-                <rect x="52" y="90" width="20" height="55" rx="8" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "arms" || bouncingId === "arms" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("arms")} />
-                <rect x="188" y="90" width="20" height="55" rx="8" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "arms" || bouncingId === "arms" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("arms")} />
+                <rect x="54" y="84" width="19" height="50" rx="8" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "arms" || bouncingId === "arms" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("arms")} style={{ animationDelay: "0.5s" }} />
+                <rect x="187" y="84" width="19" height="50" rx="8" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "arms" || bouncingId === "arms" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("arms")} style={{ animationDelay: "0.6s" }} />
                 {/* Forearms */}
-                <rect x="46" y="146" width="18" height="48" rx="7" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "forearms" || bouncingId === "forearms" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("forearms")} />
-                <rect x="196" y="146" width="18" height="48" rx="7" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "forearms" || bouncingId === "forearms" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("forearms")} />
+                <rect x="48" y="136" width="17" height="44" rx="7" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "forearms" || bouncingId === "forearms" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("forearms")} style={{ animationDelay: "0.7s" }} />
+                <rect x="195" y="136" width="17" height="44" rx="7" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "forearms" || bouncingId === "forearms" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("forearms")} style={{ animationDelay: "0.8s" }} />
                 {/* Glutes */}
-                <ellipse cx="115" cy="195" rx="20" ry="14" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "glutes" || bouncingId === "glutes" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("glutes")} />
-                <ellipse cx="145" cy="195" rx="20" ry="14" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "glutes" || bouncingId === "glutes" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("glutes")} />
-                {/* Legs / Thighs */}
-                <rect x="92" y="210" width="28" height="70" rx="10" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "legs" || bouncingId === "legs" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("legs")} />
-                <rect x="140" y="210" width="28" height="70" rx="10" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "legs" || bouncingId === "legs" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("legs")} />
+                <ellipse cx="117" cy="185" rx="18" ry="13" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "glutes" || bouncingId === "glutes" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("glutes")} />
+                <ellipse cx="143" cy="185" rx="18" ry="13" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "glutes" || bouncingId === "glutes" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("glutes")} />
+                {/* Legs */}
+                <rect x="94" y="200" width="26" height="65" rx="10" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "legs" || bouncingId === "legs" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("legs")} style={{ animationDelay: "0.3s" }} />
+                <rect x="140" y="200" width="26" height="65" rx="10" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "legs" || bouncingId === "legs" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("legs")} style={{ animationDelay: "0.5s" }} />
                 {/* Calves */}
-                <rect x="95" y="282" width="22" height="55" rx="8" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "calves" || bouncingId === "calves" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("calves")} />
-                <rect x="143" y="282" width="22" height="55" rx="8" className={`transition-all duration-300 stroke-primary/40 cursor-pointer ${selectedPart === "calves" || bouncingId === "calves" ? "fill-primary/40" : "fill-secondary hover:fill-primary/20"}`} strokeWidth="1.5" onClick={() => handlePartClick("calves")} />
+                <rect x="97" y="268" width="20" height="48" rx="8" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "calves" || bouncingId === "calves" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("calves")} />
+                <rect x="143" y="268" width="20" height="48" rx="8" className={`transition-all duration-500 stroke-primary/40 cursor-pointer ${selectedPart === "calves" || bouncingId === "calves" ? "fill-primary/50 muscle-breathe" : "fill-secondary hover:fill-primary/20 body-pulse"}`} strokeWidth="1.5" onClick={() => handlePartClick("calves")} />
                 {/* Feet */}
-                <ellipse cx="106" cy="345" rx="16" ry="8" className="fill-secondary stroke-primary/30" strokeWidth="1" />
-                <ellipse cx="154" cy="345" rx="16" ry="8" className="fill-secondary stroke-primary/30" strokeWidth="1" />
-                {/* Back overlay hint */}
-                <rect x="100" y="85" width="60" height="35" rx="4" className="fill-transparent cursor-pointer" onClick={() => handlePartClick("back")} />
+                <ellipse cx="107" cy="322" rx="14" ry="7" className="fill-secondary stroke-primary/30" strokeWidth="1" />
+                <ellipse cx="153" cy="322" rx="14" ry="7" className="fill-secondary stroke-primary/30" strokeWidth="1" />
+                {/* Back invisible hitbox */}
+                <rect x="102" y="80" width="56" height="32" className="fill-transparent cursor-pointer" onClick={() => handlePartClick("back")} />
               </svg>
 
-              {/* Labels */}
               {selectedPart && (
                 <div className="absolute top-2 right-2 rounded-full bg-primary px-3 py-1 text-[10px] font-bold text-primary-foreground animate-scale-in">
-                  {bodyParts.find(b => b.id === selectedPart)?.label} selected
+                  {bodyParts.find(b => b.id === selectedPart)?.label} ✓
                 </div>
               )}
             </div>
 
-            {/* Quick Select Grid */}
-            <div className="mt-4 grid grid-cols-4 gap-2 pb-4">
+            {/* Quick Select */}
+            <div className="mt-3 grid grid-cols-4 gap-2 pb-4">
               {bodyParts.map(part => (
-                <button
-                  key={part.id}
-                  onClick={() => handlePartClick(part.id)}
+                <button key={part.id} onClick={() => handlePartClick(part.id)}
                   className={`flex flex-col items-center gap-1 rounded-xl p-2.5 text-[10px] font-semibold transition-all duration-200 ${
                     bouncingId === part.id ? "animate-bounce scale-110" : "active:scale-90"
                   } ${selectedPart === part.id ? "bg-primary/20 ring-1 ring-primary text-primary" : "bg-secondary text-muted-foreground hover:bg-secondary/80"}`}
                 >
-                  <Dumbbell className="h-3.5 w-3.5" />
-                  {part.label}
+                  <Dumbbell className="h-3.5 w-3.5" />{part.label}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* STEP 2: Equipment Selection */}
+        {/* STEP 2: Equipment - Horizontal card layout */}
         {step === "equipment" && (
           <div className="mt-4 animate-fade-in">
             <div className="gym-gradient-card rounded-2xl p-4 mb-4">
@@ -193,36 +169,38 @@ const BodySelector = () => {
               <p className="text-lg font-bold mt-1">{bodyParts.find(b => b.id === selectedPart)?.label}</p>
             </div>
 
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">⭐ Suggested for {bodyParts.find(b => b.id === selectedPart)?.label}</h3>
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">⭐ Suggested</h3>
+            <div className="space-y-2 mb-4">
               {equipmentList.filter(e => suggestedEquip.includes(e.id)).map(eq => (
-                <button
-                  key={eq.id}
-                  onClick={() => handleEquipmentClick(eq.id)}
-                  className={`flex flex-col items-center gap-1.5 rounded-2xl p-3 transition-all duration-200 ring-1 ring-primary/30 ${
-                    bouncingId === eq.id ? "animate-bounce scale-110" : "active:scale-90"
-                  } bg-primary/10`}
+                <button key={eq.id} onClick={() => handleEquipmentClick(eq.id)}
+                  className={`flex w-full items-center gap-3 rounded-2xl p-3 ring-1 ring-primary/30 bg-primary/10 transition-all duration-200 ${
+                    bouncingId === eq.id ? "animate-bounce scale-105" : "active:scale-95"
+                  }`}
                 >
-                  <span className="text-2xl">{eq.emoji}</span>
-                  <span className="text-[10px] font-bold">{eq.label}</span>
-                  <span className="text-[8px] text-muted-foreground">{eq.desc}</span>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-2xl">{eq.emoji}</div>
+                  <div className="flex-1 text-left">
+                    <p className="text-xs font-bold">{eq.label}</p>
+                    <p className="text-[9px] text-muted-foreground">{eq.desc}</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </button>
               ))}
             </div>
 
             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">All Equipment</h3>
-            <div className="grid grid-cols-2 gap-2 pb-4">
-              {equipmentList.map(eq => (
-                <button
-                  key={eq.id}
-                  onClick={() => handleEquipmentClick(eq.id)}
-                  className={`flex flex-col items-center gap-1.5 rounded-2xl p-3 gym-gradient-card transition-all duration-200 ${
-                    bouncingId === eq.id ? "animate-bounce scale-110" : "active:scale-90 hover:scale-105"
+            <div className="space-y-2 pb-4">
+              {equipmentList.filter(e => !suggestedEquip.includes(e.id)).map(eq => (
+                <button key={eq.id} onClick={() => handleEquipmentClick(eq.id)}
+                  className={`flex w-full items-center gap-3 rounded-2xl gym-gradient-card p-3 transition-all duration-200 ${
+                    bouncingId === eq.id ? "animate-bounce scale-105" : "active:scale-95 hover:scale-[1.01]"
                   }`}
                 >
-                  <span className="text-2xl">{eq.emoji}</span>
-                  <span className="text-[10px] font-bold">{eq.label}</span>
-                  <span className="text-[8px] text-muted-foreground">{eq.desc}</span>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-secondary text-2xl">{eq.emoji}</div>
+                  <div className="flex-1 text-left">
+                    <p className="text-xs font-bold">{eq.label}</p>
+                    <p className="text-[9px] text-muted-foreground">{eq.desc}</p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </button>
               ))}
             </div>
@@ -237,21 +215,17 @@ const BodySelector = () => {
                 <Zap className="h-5 w-5 text-primary-foreground" />
                 <div>
                   <p className="text-sm font-bold text-primary-foreground">Bodyweight Only 💪</p>
-                  <p className="text-[10px] text-primary-foreground/70">No gym? No problem. Pure strength.</p>
+                  <p className="text-[10px] text-primary-foreground/70">No gym? No problem.</p>
                 </div>
               </div>
             </div>
-
             <div className="space-y-3 pb-4">
               {filteredNoEquip.map(workout => (
                 <div key={workout.id} className="rounded-2xl overflow-hidden gym-gradient-card">
-                  <button
-                    onClick={() => setExpandedWorkout(expandedWorkout === workout.id ? null : workout.id)}
+                  <button onClick={() => setExpandedWorkout(expandedWorkout === workout.id ? null : workout.id)}
                     className="flex w-full items-center gap-3 p-4 text-left transition-all active:scale-[0.98]"
                   >
-                    <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${workout.color} text-3xl`}>
-                      {workout.emoji}
-                    </div>
+                    <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${workout.color} text-3xl`}>{workout.emoji}</div>
                     <div className="flex-1">
                       <h3 className="text-sm font-bold">{workout.name}</h3>
                       <p className="text-[10px] text-muted-foreground mt-0.5">{workout.description}</p>
@@ -271,12 +245,9 @@ const BodySelector = () => {
                           <span className="text-xs">{s}</span>
                         </div>
                       ))}
-                      <button
-                        onClick={() => navigate(`/body/${selectedPart || "chest"}`)}
+                      <button onClick={() => navigate(`/body/${selectedPart || "chest"}`)}
                         className="mt-3 w-full rounded-xl gym-gradient-orange py-2.5 text-xs font-bold text-primary-foreground active:scale-95 transition-transform"
-                      >
-                        Start Workout 🔥
-                      </button>
+                      >Start Workout 🔥</button>
                     </div>
                   )}
                 </div>
